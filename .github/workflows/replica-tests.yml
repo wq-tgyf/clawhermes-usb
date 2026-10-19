@@ -1,0 +1,50 @@
+name: Replica Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "replica/**"
+      - ".github/workflows/replica-tests.yml"
+  pull_request:
+    paths:
+      - "replica/**"
+      - ".github/workflows/replica-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22", "24"]
+
+    defaults:
+      run:
+        working-directory: replica
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Show environment
+        run: |
+          node --version
+          npm --version
+
+      - name: Run test suite
+        run: npm test
+
+      - name: Test summary
+        if: always()
+        run: |
+          echo "### Replica test result (Node ${{ matrix.node }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "测试套件对应 docs/reconstruction/OBLIGATIONS.md 中的 78 条复刻义务。" >> $GITHUB_STEP_SUMMARY
+          echo "详见 docs/reconstruction/COVERAGE.md 与 docs/reconstruction/E2E-VERIFICATION.md。" >> $GITHUB_STEP_SUMMARY
