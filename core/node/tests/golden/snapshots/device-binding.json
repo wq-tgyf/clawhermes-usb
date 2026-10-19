@@ -1,0 +1,43 @@
+{
+  "command": [
+    "clawhermes.js",
+    "device-binding",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "bindingPath": "<ROOT>\\data\\settings\\device-binding.json",
+      "state": "bound",
+      "allowed": true,
+      "current": {
+        "hash": "a70024d9ec431b79d0a76409916c64c7cdf30b6e7ae43873a6a62d62171fc77b",
+        "source": "windows",
+        "summary": "Windows volume serial fingerprint for drive F:"
+      },
+      "binding": {
+        "schemaVersion": 1,
+        "createdAt": "<TIMESTAMP>",
+        "rootAtBinding": "<ROOT>",
+        "fingerprint": {
+          "hash": "a70024d9ec431b79d0a76409916c64c7cdf30b6e7ae43873a6a62d62171fc77b",
+          "source": "windows",
+          "summary": "Windows volume serial fingerprint for drive F:"
+        },
+        "fingerprints": [
+          {
+            "hash": "a70024d9ec431b79d0a76409916c64c7cdf30b6e7ae43873a6a62d62171fc77b",
+            "source": "windows",
+            "summary": "Windows volume serial fingerprint for drive F:"
+          }
+        ]
+      },
+      "messages": [
+        "Device binding matches the current USB device."
+      ]
+    }
+  },
+  "stderr": ""
+}

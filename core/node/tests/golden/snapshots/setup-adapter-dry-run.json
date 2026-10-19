@@ -1,0 +1,74 @@
+{
+  "command": [
+    "clawhermes.js",
+    "setup-adapter",
+    "hermes-web-ui",
+    "--dry-run",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "serviceId": "hermes-web-ui",
+      "displayName": "Hermes Web UI",
+      "runner": "windows",
+      "dryRun": true,
+      "confirmed": false,
+      "wouldModify": false,
+      "executed": false,
+      "command": "npm install",
+      "workingDirectory": "<ROOT>\\apps\\hermes-web-ui",
+      "logFile": "<ROOT>\\data\\logs\\setup-hermes-web-ui.log",
+      "wsl": null,
+      "exitCode": null,
+      "environment": {
+        "files": [
+          {
+            "path": "config/env/hermes-web-ui.env",
+            "exists": true,
+            "loaded": true,
+            "variables": [
+              "AUTH_TOKEN",
+              "HERMES_AGENT_API_BASE",
+              "HERMES_HOME",
+              "HERMES_WEB_UI_DATA_DIR",
+              "HERMES_WEB_UI_HOST",
+              "HERMES_WEB_UI_PORT",
+              "PORT",
+              "UPSTREAM"
+            ],
+            "errors": []
+          }
+        ],
+        "variables": [
+          "APPDATA",
+          "AUTH_TOKEN",
+          "CLAWHERMES_PATH_SEPARATOR",
+          "CLAWHERMES_PLATFORM",
+          "CLAWHERMES_RUNTIME_KEY",
+          "HERMES_AGENT_API_BASE",
+          "HERMES_HOME",
+          "HERMES_WEB_UI_DATA_DIR",
+          "HERMES_WEB_UI_HOST",
+          "HERMES_WEB_UI_PORT",
+          "HOME",
+          "LOCALAPPDATA",
+          "PATH",
+          "PIP_CACHE_DIR",
+          "PORT",
+          "TEMP",
+          "TMP",
+          "UPSTREAM",
+          "USB_ROOT",
+          "USERPROFILE",
+          "UV_CACHE_DIR",
+          "npm_config_cache"
+        ]
+      },
+      "message": "Would run setup for hermes-web-ui."
+    }
+  },
+  "stderr": ""
+}

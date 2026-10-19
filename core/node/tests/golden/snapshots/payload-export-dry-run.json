@@ -1,0 +1,42 @@
+{
+  "command": [
+    "clawhermes.js",
+    "payload-export",
+    "--dry-run",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "dryRun": true,
+      "confirmedExport": false,
+      "archivePath": "<ROOT>\\data\\backups\\payloads\\clawhermes-payloads-<TIMESTAMP>.zip",
+      "created": false,
+      "sizeBytes": null,
+      "entries": [
+        {
+          "path": "apps/hermes-agent",
+          "kind": "directory",
+          "sizeBytes": null
+        },
+        {
+          "path": "apps/hermes-web-ui",
+          "kind": "directory",
+          "sizeBytes": null
+        },
+        {
+          "path": "apps/openclaw",
+          "kind": "directory",
+          "sizeBytes": null
+        }
+      ],
+      "wouldModify": false,
+      "messages": [
+        "Payload export dry run planned 3 entries."
+      ]
+    }
+  },
+  "stderr": ""
+}

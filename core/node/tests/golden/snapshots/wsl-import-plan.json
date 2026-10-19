@@ -1,0 +1,65 @@
+{
+  "command": [
+    "clawhermes.js",
+    "wsl-import-plan",
+    "--distro",
+    "Ubuntu",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "distro": "Ubuntu",
+      "distributionName": "ClawHermes-Ubuntu",
+      "installLocation": "<ROOT>\\data\\wsl\\ClawHermes-Ubuntu",
+      "installLocationExists": false,
+      "sourceArchive": "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar",
+      "sourceArchiveExists": false,
+      "checksum": {
+        "path": "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256",
+        "exists": false,
+        "expected": null,
+        "actual": null,
+        "verified": false
+      },
+      "artifactPolicy": {
+        "directory": "<ROOT>\\runtimes\\wsl",
+        "archiveName": "ubuntu-rootfs.tar",
+        "checksumFile": "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256",
+        "automaticDownload": false,
+        "managedBy": "operator",
+        "allowedFileTypes": [
+          ".tar"
+        ],
+        "mustRemainProjectLocal": true,
+        "mustNotUseSystemTemp": true
+      },
+      "dryRun": true,
+      "executed": false,
+      "wouldModifyHost": true,
+      "wouldUseProjectStorage": true,
+      "executablePath": "wsl.exe",
+      "args": [
+        "--import",
+        "ClawHermes-Ubuntu",
+        "<ROOT>\\data\\wsl\\ClawHermes-Ubuntu",
+        "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar",
+        "--version",
+        "2"
+      ],
+      "command": "wsl.exe --import ClawHermes-Ubuntu <ROOT>\\data\\wsl\\ClawHermes-Ubuntu <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar --version 2",
+      "docs": "https://learn.microsoft.com/en-us/windows/wsl/basic-commands",
+      "messages": [
+        "This plan stores the imported distribution files under the project path: <ROOT>\\data\\wsl\\ClawHermes-Ubuntu.",
+        "The distribution name ClawHermes-Ubuntu is still registered on this Windows host.",
+        "Place a compatible rootfs tar archive at <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar before running the import command yourself.",
+        "Place the matching SHA256 file at <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256 when one is available from the artifact source.",
+        "No automatic rootfs download is performed; keep large rootfs artifacts out of git and outside system temp folders.",
+        "This command is read-only and does not run wsl.exe."
+      ]
+    }
+  },
+  "stderr": ""
+}

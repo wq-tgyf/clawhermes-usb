@@ -1,0 +1,38 @@
+{
+  "command": [
+    "clawhermes.js",
+    "sources",
+    "hermes-web-ui",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "generatedAt": "<TIMESTAMP>",
+      "wouldModify": false,
+      "sources": [
+        {
+          "id": "hermes-web-ui",
+          "displayName": "Hermes Web UI",
+          "appDir": "apps/hermes-web-ui",
+          "targetPath": "<ROOT>\\apps\\hermes-web-ui",
+          "appDirExists": true,
+          "appDirReady": true,
+          "upstream": {
+            "name": "EKKOLearnAI/hermes-web-ui",
+            "repositoryUrl": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "installDocs": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Real upstream checkout confirms package.json scripts start via npm run start and declares Node >=23.0.0."
+          },
+          "checkoutCommand": "git clone --branch main https://github.com/EKKOLearnAI/hermes-web-ui apps/hermes-web-ui",
+          "wouldModify": false
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

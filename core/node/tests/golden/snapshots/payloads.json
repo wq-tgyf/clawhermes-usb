@@ -1,0 +1,55 @@
+{
+  "command": [
+    "clawhermes.js",
+    "payloads",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "generatedAt": "<TIMESTAMP>",
+      "wouldModify": false,
+      "apps": [
+        {
+          "serviceId": "hermes-agent",
+          "path": "<ROOT>\\apps\\hermes-agent",
+          "exists": true,
+          "ready": true,
+          "entries": 80,
+          "git": null
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "path": "<ROOT>\\apps\\hermes-web-ui",
+          "exists": true,
+          "ready": true,
+          "entries": 15,
+          "git": null
+        },
+        {
+          "serviceId": "openclaw",
+          "path": "<ROOT>\\apps\\openclaw",
+          "exists": true,
+          "ready": true,
+          "entries": 50,
+          "git": null
+        }
+      ],
+      "wslRootfs": [],
+      "wslBackups": [],
+      "policy": {
+        "appsIgnored": "apps/<service-id>/ payloads are ignored except .gitkeep placeholders.",
+        "rootfsIgnored": "runtimes/wsl/*.tar and sidecars are ignored operator-managed payloads.",
+        "backupsIgnored": "data/backups/wsl/ exports are ignored runtime artifacts.",
+        "noAutomaticDownload": true
+      },
+      "messages": [
+        "payloads is read-only and does not download, export, import, or package artifacts.",
+        "Use this inventory before building or refreshing a portable payload bundle."
+      ]
+    }
+  },
+  "stderr": ""
+}

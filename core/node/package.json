@@ -1,0 +1,18 @@
+{
+  "name": "clawhermes-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ClawHermes-USB 编排核心（当前仅有编译产物 dist/，无 src/）",
+  "bin": {
+    "clawhermes": "./dist/clawhermes.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test \"tests/smoke/*.test.mjs\"",
+    "golden:record": "node tests/golden/record.mjs",
+    "golden:check": "node tests/golden/check.mjs"
+  },
+  "type": "commonjs"
+}

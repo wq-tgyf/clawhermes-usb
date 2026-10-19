@@ -1,14 +1,16 @@
-name: Replica Tests
+name: ClawHermes Tests
 
 on:
   push:
     branches: [main]
     paths:
       - "replica/**"
+      - "core/**"
       - ".github/workflows/replica-tests.yml"
   pull_request:
     paths:
       - "replica/**"
+      - "core/**"
       - ".github/workflows/replica-tests.yml"
   workflow_dispatch:
 
@@ -48,3 +50,24 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "测试套件对应 docs/reconstruction/OBLIGATIONS.md 中的 78 条复刻义务。" >> $GITHUB_STEP_SUMMARY
           echo "详见 docs/reconstruction/COVERAGE.md 与 docs/reconstruction/E2E-VERIFICATION.md。" >> $GITHUB_STEP_SUMMARY
+
+  core-smoke:
+    name: Core Smoke & Golden
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core/node
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: CLI smoke tests
+        run: npm test
+
+      - name: Golden baseline check
+        run: npm run golden:check

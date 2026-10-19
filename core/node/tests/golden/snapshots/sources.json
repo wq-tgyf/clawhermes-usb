@@ -1,0 +1,73 @@
+{
+  "command": [
+    "clawhermes.js",
+    "sources",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "generatedAt": "<TIMESTAMP>",
+      "wouldModify": false,
+      "sources": [
+        {
+          "id": "hermes-agent",
+          "displayName": "Hermes Agent",
+          "appDir": "apps/hermes-agent",
+          "targetPath": "<ROOT>\\apps\\hermes-agent",
+          "appDirExists": true,
+          "appDirReady": true,
+          "upstream": {
+            "name": "NousResearch/hermes-agent",
+            "repositoryUrl": "https://github.com/NousResearch/hermes-agent",
+            "installDocs": "https://hermes-agent.org/",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "ClawHermes now prefers a Windows-native Python venv path when upstream payloads support it. Real Windows verification is still required before marking production-ready."
+          },
+          "checkoutCommand": "git clone --branch main https://github.com/NousResearch/hermes-agent apps/hermes-agent",
+          "wouldModify": false
+        },
+        {
+          "id": "hermes-web-ui",
+          "displayName": "Hermes Web UI",
+          "appDir": "apps/hermes-web-ui",
+          "targetPath": "<ROOT>\\apps\\hermes-web-ui",
+          "appDirExists": true,
+          "appDirReady": true,
+          "upstream": {
+            "name": "EKKOLearnAI/hermes-web-ui",
+            "repositoryUrl": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "installDocs": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Real upstream checkout confirms package.json scripts start via npm run start and declares Node >=23.0.0."
+          },
+          "checkoutCommand": "git clone --branch main https://github.com/EKKOLearnAI/hermes-web-ui apps/hermes-web-ui",
+          "wouldModify": false
+        },
+        {
+          "id": "openclaw",
+          "displayName": "OpenClaw",
+          "appDir": "apps/openclaw",
+          "targetPath": "<ROOT>\\apps\\openclaw",
+          "appDirExists": true,
+          "appDirReady": true,
+          "upstream": {
+            "name": "openclaw/openclaw",
+            "repositoryUrl": "https://github.com/openclaw/openclaw",
+            "installDocs": "https://docs.openclaw.ai/platforms/windows",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Windows-native startup is the default ClawHermes path. Real upstream payload verification is still required before marking this adapter production-ready again."
+          },
+          "checkoutCommand": "git clone --branch main https://github.com/openclaw/openclaw apps/openclaw",
+          "wouldModify": false
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

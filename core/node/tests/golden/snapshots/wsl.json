@@ -1,0 +1,32 @@
+{
+  "command": [
+    "clawhermes.js",
+    "wsl",
+    "--distro",
+    "Ubuntu",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "executablePath": "C:\\Windows\\System32\\wsl.exe",
+      "found": true,
+      "statusSucceeded": true,
+      "statusText": "默认版本: 2",
+      "listSucceeded": false,
+      "listText": "WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall.",
+      "distros": [],
+      "defaultDistro": null,
+      "hasWsl2Distro": false,
+      "desiredDistro": "Ubuntu",
+      "hasDesiredDistro": false,
+      "desiredDistroVersion": null,
+      "messages": [
+        "wsl.exe --list --verbose failed: WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall."
+      ]
+    }
+  },
+  "stderr": ""
+}

@@ -1,0 +1,35 @@
+{
+  "command": [
+    "clawhermes.js",
+    "wsl-rootfs-guide",
+    "--distro",
+    "Ubuntu",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "distro": "Ubuntu",
+      "archivePath": "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar",
+      "checksumPath": "<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256",
+      "automaticDownload": false,
+      "sourceStrategy": "manual-export",
+      "exportCommand": "wsl.exe --export Ubuntu <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar",
+      "checksumCommand": "Get-FileHash -Algorithm SHA256 -LiteralPath '<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar' | ForEach-Object { \"$($_.Hash.ToLowerInvariant())  ubuntu-rootfs.tar\" } | Set-Content -Encoding UTF8 -LiteralPath '<ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256'",
+      "nextCommands": [
+        "node core/node/dist/clawhermes.js wsl-import-plan --distro Ubuntu --json",
+        "node core/node/dist/clawhermes.js wsl-import --distro Ubuntu --confirm-import --json"
+      ],
+      "docs": "https://learn.microsoft.com/en-us/windows/wsl/basic-commands",
+      "messages": [
+        "ClawHermes-USB does not download, build, or vendor WSL rootfs archives.",
+        "Export a user-managed, initialized Ubuntu distribution to <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.",
+        "Create a SHA256 sidecar at <ROOT>\\runtimes\\wsl\\ubuntu-rootfs.tar.sha256 before importing when possible.",
+        "Keep the archive under runtimes/wsl/ and outside system temp folders."
+      ]
+    }
+  },
+  "stderr": ""
+}

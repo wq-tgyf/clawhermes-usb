@@ -1,0 +1,80 @@
+{
+  "command": [
+    "clawhermes.js",
+    "adapters",
+    "hermes-web-ui",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "generatedAt": "<TIMESTAMP>",
+      "adapters": [
+        {
+          "id": "hermes-web-ui",
+          "displayName": "Hermes Web UI",
+          "enabled": true,
+          "type": "node-service",
+          "appDir": "apps/hermes-web-ui",
+          "appDirExists": true,
+          "appDirReady": true,
+          "dataDir": "data/hermes-web-ui",
+          "dataDirExists": false,
+          "upstream": {
+            "name": "EKKOLearnAI/hermes-web-ui",
+            "repositoryUrl": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "installDocs": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Real upstream checkout confirms package.json scripts start via npm run start and declares Node >=23.0.0."
+          },
+          "runtime": {
+            "kind": "node",
+            "platform": "windows",
+            "requiredExecutable": "node.exe",
+            "versionRequirement": ">=23.0.0"
+          },
+          "commands": {
+            "setup": "npm install",
+            "start": "node dist/server/index.js",
+            "stop": null
+          },
+          "envFiles": [
+            {
+              "path": "config/env/hermes-web-ui.env",
+              "exists": true,
+              "examplePath": "config/env/hermes-web-ui.env.example",
+              "exampleExists": true
+            }
+          ],
+          "dependsOn": [
+            "hermes-agent"
+          ],
+          "integration": {
+            "id": "hermes-web-ui",
+            "status": "verified",
+            "productionReady": true,
+            "verifiedAt": "<DATE>",
+            "summary": "Verified in the current USB root with official portable Node 24.15.0: upstream checkout b508de843fc8c9add284264759dee18c525b4f69, npm install setup, Hermes Agent dependency running, HTTP 200 on http://127.0.0.1:8648, and verify-adapter productionReadyCandidate=true.",
+            "sources": [
+              "https://github.com/EKKOLearnAI/hermes-web-ui"
+            ],
+            "platform": null,
+            "strategy": null
+          },
+          "portal": {
+            "label": "Hermes Web UI",
+            "url": "http://127.0.0.1:8648",
+            "group": "Hermes"
+          },
+          "nextSteps": [
+            "Run the adapter setup command from apps/hermes-web-ui: npm install."
+          ]
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

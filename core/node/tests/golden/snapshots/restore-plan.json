@@ -1,0 +1,15 @@
+{
+  "command": [
+    "clawhermes.js",
+    "restore-plan",
+    "--archive",
+    "data/backups/nonexistent.zip",
+    "--json"
+  ],
+  "exitCode": 1,
+  "stdout": {
+    "kind": "text",
+    "value": ""
+  },
+  "stderr": "Backup archive not found: data/backups/nonexistent.zip"
+}

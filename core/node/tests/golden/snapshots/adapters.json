@@ -1,0 +1,199 @@
+{
+  "command": [
+    "clawhermes.js",
+    "adapters",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "generatedAt": "<TIMESTAMP>",
+      "adapters": [
+        {
+          "id": "hermes-agent",
+          "displayName": "Hermes Agent",
+          "enabled": true,
+          "type": "python-service",
+          "appDir": "apps/hermes-agent",
+          "appDirExists": true,
+          "appDirReady": true,
+          "dataDir": "data/hermes",
+          "dataDirExists": true,
+          "upstream": {
+            "name": "NousResearch/hermes-agent",
+            "repositoryUrl": "https://github.com/NousResearch/hermes-agent",
+            "installDocs": "https://hermes-agent.org/",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "ClawHermes now prefers a Windows-native Python venv path when upstream payloads support it. Real Windows verification is still required before marking production-ready."
+          },
+          "runtime": {
+            "kind": "python",
+            "platform": "windows",
+            "requiredExecutable": "python.exe",
+            "versionRequirement": ">=3.11.0"
+          },
+          "commands": {
+            "setup": "python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install -e .",
+            "start": "python -c \"from hermes_cli.main import main; raise SystemExit(main())\" gateway run",
+            "stop": null
+          },
+          "envFiles": [
+            {
+              "path": "config/env/hermes.env",
+              "exists": true,
+              "examplePath": "config/env/hermes.env.example",
+              "exampleExists": true
+            }
+          ],
+          "dependsOn": [],
+          "integration": {
+            "id": "hermes-agent",
+            "status": "verified",
+            "productionReady": true,
+            "verifiedAt": "<DATE>",
+            "summary": "Windows-native verification passed on <DATE>: source checkout at apps/hermes-agent, Python 3.11 venv setup completed with pip install -e . exit 0, start-adapter launched .venv\\\\Scripts\\\\hermes.exe gateway run, and http://127.0.0.1:8642/health returned 200 through control status.",
+            "sources": [
+              "https://hermes-agent.org/",
+              "https://github.com/NousResearch/hermes-agent"
+            ],
+            "platform": "windows",
+            "strategy": "windows-native-adapter"
+          },
+          "portal": {
+            "label": "Hermes Agent API",
+            "url": "http://127.0.0.1:8642",
+            "group": "Hermes"
+          },
+          "nextSteps": [
+            "Run the adapter setup command from apps/hermes-agent: python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install -e .."
+          ]
+        },
+        {
+          "id": "hermes-web-ui",
+          "displayName": "Hermes Web UI",
+          "enabled": true,
+          "type": "node-service",
+          "appDir": "apps/hermes-web-ui",
+          "appDirExists": true,
+          "appDirReady": true,
+          "dataDir": "data/hermes-web-ui",
+          "dataDirExists": false,
+          "upstream": {
+            "name": "EKKOLearnAI/hermes-web-ui",
+            "repositoryUrl": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "installDocs": "https://github.com/EKKOLearnAI/hermes-web-ui",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Real upstream checkout confirms package.json scripts start via npm run start and declares Node >=23.0.0."
+          },
+          "runtime": {
+            "kind": "node",
+            "platform": "windows",
+            "requiredExecutable": "node.exe",
+            "versionRequirement": ">=23.0.0"
+          },
+          "commands": {
+            "setup": "npm install",
+            "start": "node dist/server/index.js",
+            "stop": null
+          },
+          "envFiles": [
+            {
+              "path": "config/env/hermes-web-ui.env",
+              "exists": true,
+              "examplePath": "config/env/hermes-web-ui.env.example",
+              "exampleExists": true
+            }
+          ],
+          "dependsOn": [
+            "hermes-agent"
+          ],
+          "integration": {
+            "id": "hermes-web-ui",
+            "status": "verified",
+            "productionReady": true,
+            "verifiedAt": "<DATE>",
+            "summary": "Verified in the current USB root with official portable Node 24.15.0: upstream checkout b508de843fc8c9add284264759dee18c525b4f69, npm install setup, Hermes Agent dependency running, HTTP 200 on http://127.0.0.1:8648, and verify-adapter productionReadyCandidate=true.",
+            "sources": [
+              "https://github.com/EKKOLearnAI/hermes-web-ui"
+            ],
+            "platform": null,
+            "strategy": null
+          },
+          "portal": {
+            "label": "Hermes Web UI",
+            "url": "http://127.0.0.1:8648",
+            "group": "Hermes"
+          },
+          "nextSteps": [
+            "Run the adapter setup command from apps/hermes-web-ui: npm install."
+          ]
+        },
+        {
+          "id": "openclaw",
+          "displayName": "OpenClaw",
+          "enabled": true,
+          "type": "custom",
+          "appDir": "apps/openclaw",
+          "appDirExists": true,
+          "appDirReady": true,
+          "dataDir": "data/openclaw",
+          "dataDirExists": true,
+          "upstream": {
+            "name": "openclaw/openclaw",
+            "repositoryUrl": "https://github.com/openclaw/openclaw",
+            "installDocs": "https://docs.openclaw.ai/platforms/windows",
+            "checkoutRef": "main",
+            "installMode": "source-checkout",
+            "notes": "Windows-native startup is the default ClawHermes path. Real upstream payload verification is still required before marking this adapter production-ready again."
+          },
+          "runtime": {
+            "kind": "node",
+            "platform": "windows",
+            "requiredExecutable": "node.exe",
+            "versionRequirement": ">=22.14.0"
+          },
+          "commands": {
+            "setup": "corepack enable && corepack prepare pnpm@10.33.2 --activate && pnpm install && pnpm build",
+            "start": "node openclaw.mjs gateway run --port ${OPENCLAW_GATEWAY_PORT} --verbose --allow-unconfigured",
+            "stop": null
+          },
+          "envFiles": [
+            {
+              "path": "config/env/openclaw.env",
+              "exists": true,
+              "examplePath": "config/env/openclaw.env.example",
+              "exampleExists": true
+            }
+          ],
+          "dependsOn": [],
+          "integration": {
+            "id": "openclaw",
+            "status": "verified",
+            "productionReady": true,
+            "verifiedAt": "<DATE>",
+            "summary": "Windows-native verification passed on <DATE>: source checkout at apps/openclaw, setup completed with pnpm build exit 0, start-adapter launched node openclaw.mjs gateway run, and http://127.0.0.1:18789/healthz returned 200 through control status.",
+            "sources": [
+              "https://docs.openclaw.ai/platforms/windows",
+              "https://docs.openclaw.kr/cli/gateway"
+            ],
+            "platform": "windows",
+            "strategy": "windows-native-adapter"
+          },
+          "portal": {
+            "label": "OpenClaw",
+            "url": "http://127.0.0.1:18789/",
+            "group": "OpenClaw"
+          },
+          "nextSteps": [
+            "Run the adapter setup command from apps/openclaw: corepack enable && corepack prepare pnpm@10.33.2 --activate && pnpm install && pnpm build."
+          ]
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

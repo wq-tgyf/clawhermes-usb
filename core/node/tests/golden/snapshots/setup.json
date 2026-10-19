@@ -1,0 +1,296 @@
+{
+  "command": [
+    "clawhermes.js",
+    "setup",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "adapters": [
+        {
+          "id": "hermes-agent",
+          "valid": true,
+          "errors": []
+        },
+        {
+          "id": "hermes-web-ui",
+          "valid": true,
+          "errors": []
+        },
+        {
+          "id": "openclaw",
+          "valid": true,
+          "errors": []
+        }
+      ],
+      "runtimes": [
+        {
+          "name": "node",
+          "label": "Portable Node.js",
+          "path": "<ROOT>\\runtimes\\windows\\node\\node.exe",
+          "found": true,
+          "version": "24.15.0",
+          "versionPolicy": "lts",
+          "packageType": "official-windows-zip",
+          "sourceUrl": "https://nodejs.org/en/download",
+          "installDir": "<ROOT>\\runtimes\\windows\\node",
+          "candidates": [
+            "<ROOT>\\runtimes\\windows\\node\\node.exe",
+            "<ROOT>\\runtimes\\windows\\node\\bin\\node.exe"
+          ],
+          "notes": "Use the official Windows standalone zip. Extract so node.exe is available under runtimes/windows/node."
+        },
+        {
+          "name": "python",
+          "label": "Portable Python",
+          "path": "<ROOT>\\runtimes\\windows\\python\\python.exe",
+          "found": true,
+          "version": "Python 3.11.7",
+          "versionPolicy": "3.11+",
+          "packageType": "official-windows-embeddable",
+          "sourceUrl": "https://www.python.org/downloads/windows/",
+          "installDir": "<ROOT>\\runtimes\\windows\\python",
+          "candidates": [
+            "<ROOT>\\runtimes\\windows\\python\\python.exe"
+          ],
+          "notes": "Use the official Windows embeddable package. It is isolated and does not include pip by default."
+        },
+        {
+          "name": "git",
+          "label": "Portable Git",
+          "path": "<ROOT>\\runtimes\\windows\\git\\cmd\\git.exe",
+          "found": false,
+          "version": null,
+          "versionPolicy": "latest-stable",
+          "packageType": "Git for Windows Portable",
+          "sourceUrl": "https://git-scm.com/downloads/win",
+          "installDir": "<ROOT>\\runtimes\\windows\\git",
+          "candidates": [
+            "<ROOT>\\runtimes\\windows\\git\\cmd\\git.exe",
+            "<ROOT>\\runtimes\\windows\\git\\bin\\git.exe"
+          ],
+          "notes": "Use Git for Windows Portable, also called the thumbdrive edition."
+        }
+      ],
+      "adapterRuntimeRequirements": [
+        {
+          "serviceId": "hermes-agent",
+          "runtime": "python",
+          "requiredExecutable": "python.exe",
+          "versionRequirement": ">=3.11.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\python\\python.exe",
+          "found": true,
+          "version": "Python 3.11.7",
+          "satisfies": true,
+          "message": "Adapter hermes-agent requires python >=3.11.0; installed version Python 3.11.7 satisfies it."
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "runtime": "node",
+          "requiredExecutable": "node.exe",
+          "versionRequirement": ">=23.0.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\node\\node.exe",
+          "found": true,
+          "version": "24.15.0",
+          "satisfies": true,
+          "message": "Adapter hermes-web-ui requires node >=23.0.0; installed version 24.15.0 satisfies it."
+        },
+        {
+          "serviceId": "openclaw",
+          "runtime": "node",
+          "requiredExecutable": "node.exe",
+          "versionRequirement": ">=22.14.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\node\\node.exe",
+          "found": true,
+          "version": "24.15.0",
+          "satisfies": true,
+          "message": "Adapter openclaw requires node >=22.14.0; installed version 24.15.0 satisfies it."
+        }
+      ],
+      "readiness": [
+        {
+          "id": "hermes-agent",
+          "status": "verified",
+          "productionReady": true,
+          "verifiedAt": "<DATE>",
+          "summary": "Windows-native verification passed on <DATE>: source checkout at apps/hermes-agent, Python 3.11 venv setup completed with pip install -e . exit 0, start-adapter launched .venv\\\\Scripts\\\\hermes.exe gateway run, and http://127.0.0.1:8642/health returned 200 through control status.",
+          "sources": [
+            "https://hermes-agent.org/",
+            "https://github.com/NousResearch/hermes-agent"
+          ],
+          "platform": "windows",
+          "strategy": "windows-native-adapter"
+        },
+        {
+          "id": "hermes-web-ui",
+          "status": "verified",
+          "productionReady": true,
+          "verifiedAt": "<DATE>",
+          "summary": "Verified in the current USB root with official portable Node 24.15.0: upstream checkout b508de843fc8c9add284264759dee18c525b4f69, npm install setup, Hermes Agent dependency running, HTTP 200 on http://127.0.0.1:8648, and verify-adapter productionReadyCandidate=true.",
+          "sources": [
+            "https://github.com/EKKOLearnAI/hermes-web-ui"
+          ],
+          "platform": null,
+          "strategy": null
+        },
+        {
+          "id": "openclaw",
+          "status": "verified",
+          "productionReady": true,
+          "verifiedAt": "<DATE>",
+          "summary": "Windows-native verification passed on <DATE>: source checkout at apps/openclaw, setup completed with pnpm build exit 0, start-adapter launched node openclaw.mjs gateway run, and http://127.0.0.1:18789/healthz returned 200 through control status.",
+          "sources": [
+            "https://docs.openclaw.ai/platforms/windows",
+            "https://docs.openclaw.kr/cli/gateway"
+          ],
+          "platform": "windows",
+          "strategy": "windows-native-adapter"
+        }
+      ],
+      "ports": [
+        {
+          "name": "portal",
+          "host": "127.0.0.1",
+          "port": 17000,
+          "available": true
+        },
+        {
+          "name": "hermesAgent",
+          "host": "127.0.0.1",
+          "port": 8642,
+          "available": true
+        },
+        {
+          "name": "hermesWebUi",
+          "host": "127.0.0.1",
+          "port": 8648,
+          "available": true
+        }
+      ],
+      "paths": [
+        {
+          "path": "adapters",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "apps/openclaw",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "apps/hermes-agent",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "apps/hermes-web-ui",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "config/defaults/ports.json",
+          "type": "file",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "config/defaults/services.json",
+          "type": "file",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "config/defaults/runtimes.json",
+          "type": "file",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "data/logs",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "data/tmp",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        },
+        {
+          "path": "portal",
+          "type": "directory",
+          "required": true,
+          "exists": true
+        }
+      ],
+      "envFiles": [
+        {
+          "serviceId": "hermes-agent",
+          "path": "config/env/hermes.env",
+          "exists": true,
+          "examplePath": "config/env/hermes.env.example",
+          "exampleExists": true
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "path": "config/env/hermes-web-ui.env",
+          "exists": true,
+          "examplePath": "config/env/hermes-web-ui.env.example",
+          "exampleExists": true
+        },
+        {
+          "serviceId": "openclaw",
+          "path": "config/env/openclaw.env",
+          "exists": true,
+          "examplePath": "config/env/openclaw.env.example",
+          "exampleExists": true
+        }
+      ],
+      "wsl": {
+        "root": "<ROOT>",
+        "executablePath": "C:\\Windows\\System32\\wsl.exe",
+        "found": true,
+        "statusSucceeded": true,
+        "statusText": "默认版本: 2",
+        "listSucceeded": false,
+        "listText": "WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall.",
+        "distros": [],
+        "defaultDistro": null,
+        "hasWsl2Distro": false,
+        "desiredDistro": null,
+        "hasDesiredDistro": false,
+        "desiredDistroVersion": null,
+        "messages": [
+          "wsl.exe --list --verbose failed: WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall."
+        ]
+      },
+      "wslArtifacts": [],
+      "dataWritable": true,
+      "messages": [
+        "Portable Git not found at <ROOT>\\runtimes\\windows\\git\\cmd\\git.exe."
+      ],
+      "actions": [
+        {
+          "id": "runtime:git",
+          "category": "runtime",
+          "severity": "warning",
+          "title": "Review runtime preparation plan for Portable Git",
+          "detail": "Portable Git is expected at <ROOT>\\runtimes\\windows\\git\\cmd\\git.exe. Download or place the Git for Windows Portable package before running real services.",
+          "command": "node core/node/dist/clawhermes.js runtimes --json",
+          "path": "<ROOT>\\runtimes\\windows\\git\\cmd\\git.exe",
+          "docs": "https://git-scm.com/downloads/win"
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

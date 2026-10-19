@@ -1,0 +1,24 @@
+{
+  "command": [
+    "clawhermes.js",
+    "model-config-status",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "configPath": "<ROOT>\\data\\settings\\model-config.json",
+      "exists": true,
+      "config": {
+        "providerType": "openai-compatible",
+        "apiUrl": "https://models.mixedcloud.cn/v1",
+        "model": "deepseek-v4-flash",
+        "apiKey": "[redacted]",
+        "apply": "both"
+      }
+    }
+  },
+  "stderr": ""
+}

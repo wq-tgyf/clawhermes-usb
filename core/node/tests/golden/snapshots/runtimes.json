@@ -1,0 +1,102 @@
+{
+  "command": [
+    "clawhermes.js",
+    "runtimes",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "platform": "windows",
+      "steps": [
+        {
+          "name": "node",
+          "label": "Portable Node.js",
+          "action": "extract",
+          "versionPolicy": "lts",
+          "packageType": "official-windows-zip",
+          "sourceUrl": "https://nodejs.org/en/download",
+          "installDir": "<ROOT>\\runtimes\\windows\\node",
+          "expectedExecutables": [
+            "<ROOT>\\runtimes\\windows\\node\\node.exe",
+            "<ROOT>\\runtimes\\windows\\node\\bin\\node.exe"
+          ],
+          "notes": "Use the official Windows standalone zip. Extract so node.exe is available under runtimes/windows/node.",
+          "found": true
+        },
+        {
+          "name": "python",
+          "label": "Portable Python",
+          "action": "extract",
+          "versionPolicy": "3.11+",
+          "packageType": "official-windows-embeddable",
+          "sourceUrl": "https://www.python.org/downloads/windows/",
+          "installDir": "<ROOT>\\runtimes\\windows\\python",
+          "expectedExecutables": [
+            "<ROOT>\\runtimes\\windows\\python\\python.exe"
+          ],
+          "notes": "Use the official Windows embeddable package. It is isolated and does not include pip by default.",
+          "found": true
+        },
+        {
+          "name": "git",
+          "label": "Portable Git",
+          "action": "extract",
+          "versionPolicy": "latest-stable",
+          "packageType": "Git for Windows Portable",
+          "sourceUrl": "https://git-scm.com/downloads/win",
+          "installDir": "<ROOT>\\runtimes\\windows\\git",
+          "expectedExecutables": [
+            "<ROOT>\\runtimes\\windows\\git\\cmd\\git.exe",
+            "<ROOT>\\runtimes\\windows\\git\\bin\\git.exe"
+          ],
+          "notes": "Use Git for Windows Portable, also called the thumbdrive edition.",
+          "found": false
+        }
+      ],
+      "adapterRuntimeRequirements": [
+        {
+          "serviceId": "hermes-agent",
+          "runtime": "python",
+          "requiredExecutable": "python.exe",
+          "versionRequirement": ">=3.11.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\python\\python.exe",
+          "found": true,
+          "version": "Python 3.11.7",
+          "satisfies": true,
+          "message": "Adapter hermes-agent requires python >=3.11.0; installed version Python 3.11.7 satisfies it."
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "runtime": "node",
+          "requiredExecutable": "node.exe",
+          "versionRequirement": ">=23.0.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\node\\node.exe",
+          "found": true,
+          "version": "24.15.0",
+          "satisfies": true,
+          "message": "Adapter hermes-web-ui requires node >=23.0.0; installed version 24.15.0 satisfies it."
+        },
+        {
+          "serviceId": "openclaw",
+          "runtime": "node",
+          "requiredExecutable": "node.exe",
+          "versionRequirement": ">=22.14.0",
+          "executablePath": "<ROOT>\\runtimes\\windows\\node\\node.exe",
+          "found": true,
+          "version": "24.15.0",
+          "satisfies": true,
+          "message": "Adapter openclaw requires node >=22.14.0; installed version 24.15.0 satisfies it."
+        }
+      ],
+      "messages": [
+        "Portable Node.js already present under <ROOT>\\runtimes\\windows\\node.",
+        "Portable Python already present under <ROOT>\\runtimes\\windows\\python.",
+        "Download Portable Git from https://git-scm.com/downloads/win, then extract it into <ROOT>\\runtimes\\windows\\git. Expected executable: <ROOT>\\runtimes\\windows\\git\\cmd\\git.exe."
+      ]
+    }
+  },
+  "stderr": ""
+}

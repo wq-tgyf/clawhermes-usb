@@ -141,12 +141,50 @@
 
 ---
 
-## 四、立即开始的阶段 1 任务清单
+## 四、执行进度
 
-- [ ] 1.1 修正 README 的发行版/开发仓库定位
-- [ ] 1.2 `core/node/dist/README.md` 说明编译产物属性
-- [ ] 1.3 本文件入库
-- [ ] 1.4 提交推送
+### 阶段 1：止血 —— ✅ 已完成（2026-10-19）
+
+- [x] 1.1 修正 README 的发行版/开发仓库定位
+- [x] 1.2 `core/node/dist/README.md` 说明编译产物属性
+- [x] 1.3 本文件入库
+- [x] 1.4 提交推送（commit `ef2ea96`）
+
+### 阶段 2：让 core 可测试 —— ✅ 已完成（2026-10-19）
+
+| # | 任务 | 产出 | 状态 |
+|---|---|---|---|
+| 2.1 | `core/node/package.json`（仅 bin + engines，无依赖） | `core/node/package.json` | ✅ |
+| 2.2 | CLI 冒烟测试 | `core/node/tests/smoke/cli.test.mjs` —— **8 项全绿** | ✅ |
+| 2.3 | Golden 基线（20 条只读命令） | `core/node/tests/golden/` —— **20/20 一致** | ✅ |
+| 2.4 | 接入 CI | `core-smoke` 任务 | ✅ |
+
+**实测结果**：
+
+```text
+cd core/node && npm test
+✔ 8 项通过
+
+cd core/node && npm run golden:check
+结果: 20 一致, 0 有差异, 0 缺基线
+```
+
+**这一步解决了什么**：现在改动 `core/node/dist/*.js` 有回归保护了。
+任何命令的退出码、stdout 结构、stderr 文案发生变化，`golden:check` 都会报出来。
+
+**执行中发现并修正的问题**：
+
+| 问题 | 现象 | 修正 |
+|---|---|---|
+| 归一化失效 | 绝对路径未被替换（JSON 序列化后反斜杠被转义，split 匹配不上） | 改为在原始值上归一化，而非序列化字符串 |
+| 文件名时间戳漏网 | `payload-export` 输出含 `...2026-10-19T07-59-24-895Z.zip`，标准 ISO 正则不匹配 | 增加紧凑时间戳与纯日期两种模式 |
+| 错误路径未覆盖 | 两条命令本就以非零退出，被当作"失败"丢弃 | 引入 `EXPECTS_FAILURE`，把错误行为也固化为契约 |
+| 目录位置错误 | 文件误写到 `core/tests`，与 `package.json` 不同级 | 移至 `core/node/tests` |
+
+### 阶段 3：还原关键模块 —— ⏸ 待开始
+
+**开始前需确认**：你手上是否有原始开发仓库（含 `core/node/src/` 与 `tsconfig.json`）？
+有的话直接用真源码，跳过还原。
 
 ---
 

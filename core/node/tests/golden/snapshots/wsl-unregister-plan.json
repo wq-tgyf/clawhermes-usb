@@ -1,0 +1,68 @@
+{
+  "command": [
+    "clawhermes.js",
+    "wsl-unregister-plan",
+    "--distro",
+    "Ubuntu",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "distro": "Ubuntu",
+      "distributionName": "ClawHermes-Ubuntu",
+      "registered": false,
+      "diagnostics": {
+        "root": "<ROOT>",
+        "executablePath": "C:\\Windows\\System32\\wsl.exe",
+        "found": true,
+        "statusSucceeded": true,
+        "statusText": "默认版本: 2",
+        "listSucceeded": false,
+        "listText": "WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall.",
+        "distros": [],
+        "defaultDistro": null,
+        "hasWsl2Distro": false,
+        "desiredDistro": null,
+        "hasDesiredDistro": false,
+        "desiredDistroVersion": null,
+        "messages": [
+          "wsl.exe --list --verbose failed: WSL is present as a host command, but no Linux distribution is installed. Run wsl.exe --install, then rerun this diagnostic. See https://aka.ms/wslinstall."
+        ]
+      },
+      "backupArchive": "<ROOT>\\data\\backups\\wsl\\ClawHermes-Ubuntu-backup.tar",
+      "backupCommand": "wsl.exe --export ClawHermes-Ubuntu <ROOT>\\data\\backups\\wsl\\ClawHermes-Ubuntu-backup.tar",
+      "exportCommand": "node core/node/dist/clawhermes.js wsl-export --distro Ubuntu --confirm-export --json",
+      "latestBackup": {
+        "exists": false,
+        "path": null,
+        "sizeBytes": null,
+        "modifiedTime": null
+      },
+      "dryRun": true,
+      "executed": false,
+      "wouldModifyHost": true,
+      "destructive": true,
+      "executablePath": "wsl.exe",
+      "args": [
+        "--unregister",
+        "ClawHermes-Ubuntu"
+      ],
+      "command": "wsl.exe --unregister ClawHermes-Ubuntu",
+      "confirmCommand": "node core/node/dist/clawhermes.js wsl-unregister --distro Ubuntu --confirm-unregister --json",
+      "docs": "https://learn.microsoft.com/en-us/windows/wsl/basic-commands",
+      "warnings": [
+        "Unregistering ClawHermes-Ubuntu permanently deletes that WSL distribution and its Linux filesystem from this Windows host.",
+        "Export a backup first with: wsl.exe --export ClawHermes-Ubuntu <ROOT>\\data\\backups\\wsl\\ClawHermes-Ubuntu-backup.tar",
+        "This command is read-only and does not run wsl.exe."
+      ],
+      "messages": [
+        "Distribution is not registered on this host: ClawHermes-Ubuntu.",
+        "No project-local WSL backup found for ClawHermes-Ubuntu."
+      ]
+    }
+  },
+  "stderr": ""
+}

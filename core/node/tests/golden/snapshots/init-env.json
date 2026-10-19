@@ -1,0 +1,71 @@
+{
+  "command": [
+    "clawhermes.js",
+    "init-env",
+    "--json"
+  ],
+  "exitCode": 0,
+  "stdout": {
+    "kind": "json",
+    "value": {
+      "root": "<ROOT>",
+      "dryRun": false,
+      "files": [
+        {
+          "serviceId": "hermes-agent",
+          "path": "config/env/hermes.env",
+          "exists": true,
+          "examplePath": "config/env/hermes.env.example",
+          "exampleExists": true,
+          "action": "skipped",
+          "reason": "exists"
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "path": "config/env/hermes-web-ui.env",
+          "exists": true,
+          "examplePath": "config/env/hermes-web-ui.env.example",
+          "exampleExists": true,
+          "action": "skipped",
+          "reason": "exists"
+        },
+        {
+          "serviceId": "openclaw",
+          "path": "config/env/openclaw.env",
+          "exists": true,
+          "examplePath": "config/env/openclaw.env.example",
+          "exampleExists": true,
+          "action": "skipped",
+          "reason": "exists"
+        }
+      ],
+      "created": [],
+      "skipped": [
+        {
+          "serviceId": "hermes-agent",
+          "path": "config/env/hermes.env",
+          "examplePath": "config/env/hermes.env.example",
+          "reason": "exists"
+        },
+        {
+          "serviceId": "hermes-web-ui",
+          "path": "config/env/hermes-web-ui.env",
+          "examplePath": "config/env/hermes-web-ui.env.example",
+          "reason": "exists"
+        },
+        {
+          "serviceId": "openclaw",
+          "path": "config/env/openclaw.env",
+          "examplePath": "config/env/openclaw.env.example",
+          "reason": "exists"
+        }
+      ],
+      "messages": [
+        "Skipped existing env file: config/env/hermes.env.",
+        "Skipped existing env file: config/env/hermes-web-ui.env.",
+        "Skipped existing env file: config/env/openclaw.env."
+      ]
+    }
+  },
+  "stderr": ""
+}
