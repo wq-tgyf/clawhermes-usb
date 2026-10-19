@@ -5,7 +5,13 @@
  * - 只选**不会改变系统状态**的只读命令（status / adapters / payloads / --dry-run 等）
  * - 不收录会启停服务、写文件、改宿主机状态的命令
  */
-export const ROOT = "F:\\DTC";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// 仓库根目录动态解析：本地是 F:\DTC，CI 上是 D:\a\...\，写死会导致全部路径断言失败。
+export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
+// 归一化基准：优先用环境变量（若输出里的路径与 cwd 不一致）
+export const NORMALIZE_ROOT = process.env.CLAWHERMES_ROOT_OVERRIDE || ROOT;
 
 export const CASES = [
   { name: "status", args: ["status", "--json"] },
