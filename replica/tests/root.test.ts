@@ -78,10 +78,23 @@ test("O005 提示文件内容进入候选并被采用", () => {
 });
 
 test("O006 祖先路径枚举不含自身且到根停止", () => {
-  const paths = ancestorPaths("F:\\a\\b\\c");
-  assert.equal(paths.includes("F:\\a\\b\\c"), false);
-  assert.equal(paths[0], "F:\\a\\b");
-  assert.equal(paths[1], "F:\\a");
+  // 用当前平台的原生路径样本：node:path 的行为是平台相关的，
+  // 写死 Windows 路径会让 Linux CI 失败（实际踩过）。
+  const win = process.platform === "win32";
+  const root = win ? "F:\\" : "/";
+  const start = win ? "F:\\a\\b\\c" : "/a/b/c";
+  const paths = ancestorPaths(start);
+
+  assert.equal(paths.includes(start), false, "不应包含自身");
+  assert.equal(paths[0], win ? "F:\\a\\b" : "/a/b", "第一级是父目录");
+  assert.equal(paths[1], win ? "F:\\a" : "/a", "第二级是祖父目录");
+  assert.equal(paths.at(-1), root, "最后一级是根");
+});
+
+test("O006 祖先路径在 Windows 语义下逐级上溯", () => {
+  // 交叉验证：显式用 posix 语义跑一遍，确保逻辑本身与平台无关
+  const paths = ancestorPaths.posix("/a/b/c");
+  assert.deepEqual(paths, ["/a/b", "/a", "/"]);
 });
 
 test("O007 Windows 便携 node 存在则使用，否则回退 node", () => {

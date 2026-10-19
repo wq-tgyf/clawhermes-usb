@@ -4,6 +4,7 @@
  * 对应源码：bun-index.ts:253-301
  */
 import { existsSync, readFileSync } from "node:fs";
+import * as pathmodule from "node:path";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { ENV_USB_ROOT, ROOT_HINT_FILES, USB_ROOT_MARKER } from "./constants.ts";
@@ -18,6 +19,21 @@ export function ancestorPaths(start: string): string[] {
   }
   return paths;
 }
+
+/**
+ * 同上，但固定使用 POSIX 语义。
+ * 仅供跨平台测试交叉验证；生产代码不调用（保持与原产物一致，只有平台原生行为一种）。
+ */
+ancestorPaths.posix = (start: string): string[] => {
+  const paths: string[] = [];
+  const posix = pathmodule.posix;
+  let current = posix.resolve(start);
+  while (posix.dirname(current) !== current) {
+    current = posix.dirname(current);
+    paths.push(current);
+  }
+  return paths;
+};
 
 /** O-005 从 start 及祖先目录读取根目录提示文件，过滤空值。 */
 export function rootHintCandidates(start: string): string[] {

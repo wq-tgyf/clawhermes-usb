@@ -13,7 +13,8 @@ function deps(root: string, completed: Record<string, unknown>, logs: string[] =
 }
 
 test("O026 命令参数序列正确", () => {
-  const root = "F:\\usb";
+  // 用平台原生路径构造，避免 Linux CI 上 join() 行为不同导致误判
+  const root = process.platform === "win32" ? "F:\\usb" : "/usb";
   assert.deepEqual(lifecycleCommand(root, "stop").slice(1), [
     join(root, "core", "node", "dist", "clawhermes.js"),
     "stop",
