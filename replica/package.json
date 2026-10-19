@@ -1,0 +1,15 @@
+{
+  "name": "clawhermes-replica",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ClawHermes Control 编排层复刻（复刻自 ClawHermes-Control-Electrobun-Setup.tar.zst）",
+  "scripts": {
+    "test": "node --test --test-concurrency=2 \"tests/**/*.test.ts\"",
+    "test:watch": "node --test --watch --test-concurrency=2 \"tests/**/*.test.ts\"",
+    "test:single": "node --test \"tests/**/*.test.ts\""
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

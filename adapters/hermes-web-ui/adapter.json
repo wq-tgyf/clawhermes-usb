@@ -1,0 +1,92 @@
+{
+  "id": "hermes-web-ui",
+  "displayName": "Hermes Web UI",
+  "description": "EKKOLearnAI/hermes-web-ui dashboard for Hermes Agent.",
+  "type": "node-service",
+  "enabled": true,
+  "appDir": "apps/hermes-web-ui",
+  "runtime": {
+    "kind": "node",
+    "platform": "windows",
+    "requiredExecutable": "node.exe",
+    "versionRequirement": ">=23.0.0"
+  },
+  "upstream": {
+    "name": "EKKOLearnAI/hermes-web-ui",
+    "repositoryUrl": "https://github.com/EKKOLearnAI/hermes-web-ui",
+    "installDocs": "https://github.com/EKKOLearnAI/hermes-web-ui",
+    "checkoutRef": "main",
+    "installMode": "source-checkout",
+    "notes": "Real upstream checkout confirms package.json scripts start via npm run start and declares Node >=23.0.0."
+  },
+  "commands": {
+    "setup": "npm install",
+    "start": "node dist/server/index.js",
+    "stop": null
+  },
+  "env": {
+    "files": [
+      "config/env/hermes-web-ui.env"
+    ],
+    "variables": {
+      "HERMES_HOME": "${USB_ROOT}/data/hermes",
+      "HERMES_WEB_UI_DATA_DIR": "${USB_ROOT}/data/hermes-web-ui",
+      "PORT": "8648",
+      "HERMES_AGENT_API_BASE": "http://127.0.0.1:8642",
+      "UPSTREAM": "http://127.0.0.1:8642",
+      "AUTH_TOKEN": "clawhermes",
+      "HOME": "${USB_ROOT}/data/home",
+      "USERPROFILE": "${USB_ROOT}/data/home"
+    }
+  },
+  "dataDir": "data/hermes-web-ui",
+  "logFile": "data/logs/hermes-web-ui.log",
+  "pidFile": "data/tmp/pids/hermes-web-ui.pid",
+  "health": {
+    "type": "http",
+    "url": "http://127.0.0.1:8648",
+    "timeoutSeconds": 30
+  },
+  "portal": {
+    "label": "Hermes Web UI",
+    "url": "http://127.0.0.1:8648",
+    "group": "Hermes"
+  },
+  "integration": {
+    "status": "verified",
+    "productionReady": true,
+    "verifiedAt": "2026-05-01",
+    "summary": "Verified in the current USB root with official portable Node 24.15.0: upstream checkout b508de843fc8c9add284264759dee18c525b4f69, npm install setup, Hermes Agent dependency running, HTTP 200 on http://127.0.0.1:8648, and verify-adapter productionReadyCandidate=true.",
+    "sources": [
+      "https://github.com/EKKOLearnAI/hermes-web-ui"
+    ]
+  },
+  "platformOverrides": {
+    "darwin": {
+      "runtime": {
+        "kind": "node",
+        "platform": "darwin",
+        "requiredExecutable": "node",
+        "versionRequirement": ">=23.0.0"
+      },
+      "commands": {
+        "setup": "npm install && npm run build",
+        "start": "node dist/server/index.js"
+      },
+      "integration": {
+        "status": "verified",
+        "productionReady": true,
+        "verifiedAt": "2026-06-01",
+        "summary": "macOS adapter uses the same built dist/server payload with Node >=23 from runtimes/macos/node/<darwin-arch>/bin and macOS-compatible dependencies prepared by npm install on a macOS build host.",
+        "platform": "darwin",
+        "strategy": "macos-node-adapter",
+        "sources": [
+          "https://github.com/EKKOLearnAI/hermes-web-ui"
+        ]
+      }
+    }
+  },
+  "dependsOn": [
+    "hermes-agent"
+  ]
+}

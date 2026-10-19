@@ -1,0 +1,35 @@
+# ===== 上游 payload（体积大、非本仓库维护）=====
+apps/
+runtimes/
+runtime-archives/
+_internal/
+
+# ===== 运行时数据与日志 =====
+data/
+*.log
+logs/
+
+# ===== 构建产物与二进制 =====
+*.exe
+*.dll
+*.tar.zst
+*.tar.gz
+*.app/
+# 注意：core/node/dist 是项目实际提交的构建产物（源码在此，必须入库），
+# 因此这里不能用宽泛的 dist/ 规则，改为显式排除其它构建目录。
+/build/
+!core/node/dist/
+packages/*/dist/
+node_modules/
+
+# ===== 复刻工作区（大体积、可重建）=====
+reconstruction/extracted/
+tmp/
+.clawhermes/
+status.json
+
+# ===== 编辑器/系统 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

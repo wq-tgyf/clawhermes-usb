@@ -1,0 +1,333 @@
+{
+    "schemaVersion":  1,
+    "profile":  "runtime-payload",
+    "generatedAt":  "2026-06-03T08:02:58.0333801Z",
+    "sourceRoot":  "E:\\ClawHermes-USB",
+    "outputRoot":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes",
+    "includeData":  false,
+    "payloadsIncluded":  true,
+    "entryPoint":  "ClawHermes-Control-Electrobun.exe",
+    "entryPoints":  {
+                        "windows":  "ClawHermes-Control-Electrobun.exe",
+                        "macos":  "Start-ClawHermes-Mac.command",
+                        "macosUi":  "ClawHermes-Control-Mac.app"
+                    },
+    "rootEntrypointPolicy":  "The release root exposes the Windows Electrobun control launcher when bundled, keeps the Windows PyQt control executable as fallback, and exposes the macOS .command launcher. Legacy Windows VBS/PowerShell launchers are not exposed as root entrypoints.",
+    "sharedPayloads":  [
+                           "core",
+                           "adapters",
+                           "apps",
+                           "portal",
+                           "config",
+                           "data",
+                           "skills"
+                       ],
+    "platformPayloads":  {
+                             "windows":  [
+                                             "ClawHermes-Control-Electrobun.exe",
+                                             "ClawHermes-Control-Electrobun-Setup.exe",
+                                             "ClawHermes-Control-Electrobun-Setup.tar.zst",
+                                             "ClawHermes-Control-Electrobun-Setup.metadata.json",
+                                             "ClawHermes-Control.exe",
+                                             "runtimes/windows"
+                                         ],
+                             "macos":  [
+                                           "Start-ClawHermes-Mac.command",
+                                           "Stop-ClawHermes-Mac.command",
+                                           "ClawHermes-Control-Mac.app",
+                                           "ClawHermes-Control-Mac.app.tar.gz",
+                                           "runtime-archives/macos",
+                                           "runtimes/macos"
+                                       ]
+                         },
+    "build":  {
+                  "skipped":  true,
+                  "stoppedExistingServices":  false,
+                  "bundledHostRuntimes":  true
+              },
+    "appPayloadPolicy":  {
+                             "purpose":  "Copy runnable upstream payloads while removing checkout metadata, tests, examples, caches, and unsafe reparse points.",
+                             "excludedDirectoryNames":  [
+                                                            ".git",
+                                                            ".github",
+                                                            ".vscode",
+                                                            ".idea",
+                                                            "test",
+                                                            "tests",
+                                                            "__tests__",
+                                                            "test-fixtures",
+                                                            "examples",
+                                                            "example",
+                                                            "samples",
+                                                            "sample",
+                                                            "coverage",
+                                                            ".cache",
+                                                            ".turbo",
+                                                            ".next",
+                                                            ".vite"
+                                                        ],
+                             "excludedFileNames":  [
+                                                       ".gitignore",
+                                                       ".dockerignore",
+                                                       "dockerfile",
+                                                       "docker-compose.yml",
+                                                       "contributing.md",
+                                                       "security.md"
+                                                   ],
+                             "note":  "Some upstream projects may still require source-like runtime directories. The manifest lists any retained candidates for release review."
+                         },
+    "channelPluginPolicy":  {
+                                "weixin":  {
+                                               "package":  "@tencent-weixin/openclaw-weixin",
+                                               "relativePath":  "apps/openclaw/node_modules/@tencent-weixin/openclaw-weixin",
+                                               "included":  true,
+                                               "installAttempted":  false,
+                                               "installCommand":  null,
+                                               "source":  "E:\\ClawHermes-USB\\apps\\openclaw\\node_modules\\@tencent-weixin\\openclaw-weixin",
+                                               "reason":  null
+                                           }
+                            },
+    "deviceBindingPolicy":  {
+                                "bindingFile":  "data/settings/device-binding.json",
+                                "removedFromRelease":  false,
+                                "firstRunBehavior":  "The generated release is intentionally unbound. On first service start, ClawHermes writes data/settings/device-binding.json for the current USB device."
+                            },
+    "skillsPayload":  {
+                          "source":  "E:\\ClawHermes-USB\\skills",
+                          "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\skills",
+                          "included":  true,
+                          "skillCount":  24,
+                          "policy":  "Portable skills are stored outside apps/openclaw and loaded through OpenClaw skills.load.extraDirs."
+                      },
+    "copiedPaths":  [
+                        {
+                            "path":  "core/node/dist",
+                            "source":  "E:\\ClawHermes-USB\\core\\node\\dist",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\core\\node\\dist"
+                        },
+                        {
+                            "path":  "adapters",
+                            "source":  "E:\\ClawHermes-USB\\adapters",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\adapters"
+                        },
+                        {
+                            "path":  "config",
+                            "source":  "E:\\ClawHermes-USB\\config",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\config"
+                        },
+                        {
+                            "path":  "portal",
+                            "source":  "E:\\ClawHermes-USB\\portal",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\portal"
+                        },
+                        {
+                            "path":  "runtimes",
+                            "source":  "E:\\ClawHermes-USB\\runtimes",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\runtimes"
+                        },
+                        {
+                            "path":  "runtimes/windows/python",
+                            "source":  "D:\\python3.11",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\runtimes\\windows\\python"
+                        },
+                        {
+                            "path":  "README.md",
+                            "source":  "E:\\ClawHermes-USB\\README.md",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\README.md"
+                        },
+                        {
+                            "path":  "README.zh-CN.md",
+                            "source":  "E:\\ClawHermes-USB\\README.zh-CN.md",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\README.zh-CN.md"
+                        },
+                        {
+                            "path":  "docs",
+                            "source":  "E:\\ClawHermes-USB\\docs",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\docs"
+                        },
+                        {
+                            "path":  "data",
+                            "source":  "(created empty)",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\data"
+                        },
+                        {
+                            "path":  "skills",
+                            "source":  "E:\\ClawHermes-USB\\skills",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\skills"
+                        },
+                        {
+                            "path":  "ClawHermes-Control.exe",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\pyqt\\dist\\ClawHermes-Control\\ClawHermes-Control.exe",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control.exe"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Electrobun.exe",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\electrobun\\build\\canary-win-x64\\ClawHermes-Control-Electrobun.exe",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Electrobun.exe"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Electrobun-Setup.exe",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\electrobun\\build\\canary-win-x64\\DTclaw Control-Setup-canary.exe",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Electrobun-Setup.exe"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Electrobun-Setup.tar.zst",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\electrobun\\build\\canary-win-x64\\DTclaw Control-Setup-canary.tar.zst",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Electrobun-Setup.tar.zst"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Electrobun-Setup.metadata.json",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\electrobun\\build\\canary-win-x64\\DTclaw Control-Setup-canary.metadata.json",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Electrobun-Setup.metadata.json"
+                        },
+                        {
+                            "path":  "Start-ClawHermes-Mac.command",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\macos\\Start.command",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\Start-ClawHermes-Mac.command"
+                        },
+                        {
+                            "path":  "Stop-ClawHermes-Mac.command",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\macos\\Stop.command",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\Stop-ClawHermes-Mac.command"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Mac.app",
+                            "source":  "E:\\ClawHermes-USB\\launcher\\electrobun\\build\\canary-macos-arm64\\DTclaw Control-canary.app",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Mac.app"
+                        },
+                        {
+                            "path":  "ClawHermes-Control-Mac.app.tar.gz",
+                            "source":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Mac.app",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\ClawHermes-Control-Mac.app.tar.gz"
+                        },
+                        {
+                            "path":  "runtime-archives/macos",
+                            "source":  "E:\\ClawHermes-USB\\runtime-archives\\macos",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\runtime-archives\\macos"
+                        }
+                    ],
+    "appPayloads":  [
+                        {
+                            "serviceId":  "hermes-agent",
+                            "source":  "E:\\ClawHermes-USB\\apps\\hermes-agent",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\apps\\hermes-agent",
+                            "excludedDirectoryNames":  [
+                                                           ".git",
+                                                           ".github",
+                                                           ".vscode",
+                                                           ".idea",
+                                                           "test",
+                                                           "tests",
+                                                           "__tests__",
+                                                           "test-fixtures",
+                                                           "examples",
+                                                           "example",
+                                                           "samples",
+                                                           "sample",
+                                                           "coverage",
+                                                           ".cache",
+                                                           ".turbo",
+                                                           ".next",
+                                                           ".vite"
+                                                       ],
+                            "excludedFileNames":  [
+                                                      ".gitignore",
+                                                      ".dockerignore",
+                                                      "dockerfile",
+                                                      "docker-compose.yml",
+                                                      "contributing.md",
+                                                      "security.md"
+                                                  ],
+                            "retainedSourceLikeDirectories":  [
+                                                                  "agent",
+                                                                  "gateway",
+                                                                  "hermes_cli",
+                                                                  "web",
+                                                                  "plugins",
+                                                                  "skills"
+                                                              ]
+                        },
+                        {
+                            "serviceId":  "hermes-web-ui",
+                            "source":  "E:\\ClawHermes-USB\\apps\\hermes-web-ui",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\apps\\hermes-web-ui",
+                            "excludedDirectoryNames":  [
+                                                           ".git",
+                                                           ".github",
+                                                           ".vscode",
+                                                           ".idea",
+                                                           "test",
+                                                           "tests",
+                                                           "__tests__",
+                                                           "test-fixtures",
+                                                           "examples",
+                                                           "example",
+                                                           "samples",
+                                                           "sample",
+                                                           "coverage",
+                                                           ".cache",
+                                                           ".turbo",
+                                                           ".next",
+                                                           ".vite"
+                                                       ],
+                            "excludedFileNames":  [
+                                                      ".gitignore",
+                                                      ".dockerignore",
+                                                      "dockerfile",
+                                                      "docker-compose.yml",
+                                                      "contributing.md",
+                                                      "security.md"
+                                                  ],
+                            "retainedSourceLikeDirectories":  [
+                                                                  "packages"
+                                                              ]
+                        },
+                        {
+                            "serviceId":  "openclaw",
+                            "source":  "E:\\ClawHermes-USB\\apps\\openclaw",
+                            "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\apps\\openclaw",
+                            "excludedDirectoryNames":  [
+                                                           ".git",
+                                                           ".github",
+                                                           ".vscode",
+                                                           ".idea",
+                                                           "test",
+                                                           "tests",
+                                                           "__tests__",
+                                                           "test-fixtures",
+                                                           "examples",
+                                                           "example",
+                                                           "samples",
+                                                           "sample",
+                                                           "coverage",
+                                                           ".cache",
+                                                           ".turbo",
+                                                           ".next",
+                                                           ".vite"
+                                                       ],
+                            "excludedFileNames":  [
+                                                      ".gitignore",
+                                                      ".dockerignore",
+                                                      "dockerfile",
+                                                      "docker-compose.yml",
+                                                      "contributing.md",
+                                                      "security.md"
+                                                  ],
+                            "retainedSourceLikeDirectories":  [
+                                                                  "packages",
+                                                                  "ui",
+                                                                  "skills"
+                                                              ]
+                        }
+                    ],
+    "skippedReparsePoints":  [
+
+                             ],
+    "warnings":  [
+                     "App \u0027hermes-agent\u0027 retained source-like runtime directories: agent, gateway, hermes_cli, web, plugins, skills. Verify license and runtime needs before shipping.",
+                     "App \u0027hermes-web-ui\u0027 retained source-like runtime directories: packages. Verify license and runtime needs before shipping.",
+                     "App \u0027openclaw\u0027 retained source-like runtime directories: packages, ui, skills. Verify license and runtime needs before shipping.",
+                     "Missing optional macOS runtime archive: runtime-archives/macos/node-v24-darwin-x64.tar.gz.",
+                     "Missing optional macOS runtime archive: runtime-archives/macos/python-3.11-darwin-x64.tar.gz."
+                 ]
+}

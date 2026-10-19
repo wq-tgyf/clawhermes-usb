@@ -1,0 +1,25 @@
+ClawHermes-USB portable release
+
+Windows:
+1. Double-click ClawHermes-Control-Electrobun.exe when it is present.
+2. If the Electrobun launcher is not present, double-click ClawHermes-Control.exe.
+3. Use the control panel to configure API URL, model, and API key.
+4. Click Start to launch the shared payload services.
+
+macOS:
+1. Double-click Start-ClawHermes-Mac.command.
+2. If macOS blocks the script, open Terminal here and run:
+   chmod +x Start-ClawHermes-Mac.command Stop-ClawHermes-Mac.command
+   ./Start-ClawHermes-Mac.command
+3. The launcher opens ClawHermes-Control-Mac.app when bundled.
+4. If the app is not bundled, the launcher opens the local Portal in your browser.
+
+Runtime logs:
+- data/logs/macos-launcher.log records macOS runtime extraction, Electrobun launch probing, core startup, and Portal fallback.
+- data/logs/electrobun-control.log records the macOS Electrobun process startup, window creation, and control-server handshake.
+- data/logs/launcher.log, portal.log, openclaw.log, hermes-agent.log, and hermes-web-ui.log record the shared core and service runtime details.
+
+Release notes:
+- Windows and macOS share core, adapters, apps, portal, config, data, and skills.
+- Platform-specific launchers and runtimes stay at the release root or under runtimes/.
+- release-manifest.json records copied payloads, entrypoints, and warnings.

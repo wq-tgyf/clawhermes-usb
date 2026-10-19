@@ -1,0 +1,68 @@
+{
+  "id": "openclaw",
+  "displayName": "OpenClaw",
+  "description": "Official OpenClaw runtime, Control UI, and WebChat integration.",
+  "type": "custom",
+  "enabled": true,
+  "appDir": "apps/openclaw",
+  "runtime": {
+    "kind": "node",
+    "platform": "windows",
+    "requiredExecutable": "node.exe",
+    "versionRequirement": ">=22.14.0"
+  },
+  "upstream": {
+    "name": "openclaw/openclaw",
+    "repositoryUrl": "https://github.com/openclaw/openclaw",
+    "installDocs": "https://docs.openclaw.ai/platforms/windows",
+    "checkoutRef": "main",
+    "installMode": "source-checkout",
+    "notes": "Windows-native startup is the default ClawHermes path. Real upstream payload verification is still required before marking this adapter production-ready again."
+  },
+  "commands": {
+    "setup": "corepack enable && corepack prepare pnpm@10.33.2 --activate && pnpm install && pnpm build",
+    "start": "node openclaw.mjs gateway run --port ${OPENCLAW_GATEWAY_PORT} --verbose --allow-unconfigured",
+    "stop": null
+  },
+  "env": {
+    "files": [
+      "config/env/openclaw.env"
+    ],
+    "variables": {
+      "HOME": "${USB_ROOT}/data/home",
+      "USERPROFILE": "${USB_ROOT}/data/home",
+      "OPENCLAW_HOME": "${USB_ROOT}/data/openclaw",
+      "OPENCLAW_DATA_DIR": "${USB_ROOT}/data/openclaw",
+      "OPENCLAW_STATE_DIR": "${USB_ROOT}/data/openclaw",
+      "OPENCLAW_CONFIG_PATH": "${USB_ROOT}/data/openclaw/openclaw.json",
+      "OPENCLAW_GATEWAY_PORT": "18789",
+      "OPENCLAW_GATEWAY_TOKEN": "clawhermes"
+    }
+  },
+  "dataDir": "data/openclaw",
+  "logFile": "data/logs/openclaw.log",
+  "pidFile": "data/tmp/pids/openclaw.pid",
+  "health": {
+    "type": "http",
+    "url": "http://127.0.0.1:18789/healthz",
+    "timeoutSeconds": 30
+  },
+  "portal": {
+    "label": "OpenClaw",
+    "url": "http://127.0.0.1:18789/",
+    "group": "OpenClaw"
+  },
+  "integration": {
+    "status": "verified",
+    "productionReady": true,
+    "verifiedAt": "2026-05-06",
+    "summary": "Windows-native verification passed on 2026-05-06: source checkout at apps/openclaw, setup completed with pnpm build exit 0, start-adapter launched node openclaw.mjs gateway run, and http://127.0.0.1:18789/healthz returned 200 through control status.",
+    "platform": "windows",
+    "strategy": "windows-native-adapter",
+    "sources": [
+      "https://docs.openclaw.ai/platforms/windows",
+      "https://docs.openclaw.kr/cli/gateway"
+    ]
+  },
+  "dependsOn": []
+}
