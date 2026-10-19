@@ -1,6 +1,6 @@
 # ClawHermes-USB 复刻执行计划
 
-> 状态：**已完成**（2026-10-19，阶段 0–4 全部交付；阶段 5 见文末结论）
+> 状态：**全部完成**（2026-10-19，阶段 0–5 交付完毕，已发布至 https://github.com/wq-tgyf/clawhermes-usb ）
 > 执行者：按阶段顺序逐条执行，每个阶段完成后再进入下一阶段
 
 ---
@@ -320,7 +320,7 @@ rea doctor --json
 | 2 义务清单 | ✅ | `OBLIGATIONS.md`（78 条） |
 | 3 实现 | ✅ | `F:\DTC\replica\`（10 个模块 + 81 个测试） |
 | 4 覆盖率 | ✅ | `COVERAGE.md`（72/78 = 92.3%） |
-| 5 仓库发布 | ✅ 准备完成 | `RELEASE-DECISION.md`（git init 待人工执行） |
+| 5 仓库发布 | ✅ 已发布 | 私有仓库 `wq-tgyf/clawhermes-usb`，commit `2472700` |
 
 ### 阶段 5 建议（未执行，等决策）
 
@@ -333,17 +333,14 @@ rea doctor --json
 4. `.gitignore` 排除 `apps/`、`runtimes/`、`runtime-archives/`、`data/`、`_internal/`、`*.exe`、`*.tar.zst`
 5. 是否公开，待复刻产物合规性人工评估后决定
 
-### 收尾：唯一待人工执行项
+### 收尾：已完成
 
-阶段 5 的所有**文件准备**已完成并实测校验（`.gitignore` 22 条路径逐一验证通过）。
-仅剩 `git init` + 首次 commit，建议由你本人执行以便核对提交范围：
+发布于 2026-10-19 完成：
 
-```powershell
-cd F:\DTC
-git init
-git add .
-git status --short   # 期望：约 618 个文件 / 3.39 MB，不含 apps/ runtimes/ data/ 与任何 .exe/.tar.zst
-git commit -m "chore: 初始化仓库并加入编排层复刻实现"
+```text
+https://github.com/wq-tgyf/clawhermes-usb   (private)
+默认分支 main，首次提交 2472700
+630 个文件 / 3.30 MB
 ```
 
-> 若 `git status` 出现 `apps/`、`runtimes/`、`data/` 或二进制文件，说明 `.gitignore` 未生效，先停下排查。
+详见 `RELEASE-DECISION.md` 的「发布结果」章节。

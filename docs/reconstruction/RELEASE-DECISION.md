@@ -79,7 +79,7 @@ launcher/  skills/  package.json  README*.md  LICENSE  THIRD_PARTY_NOTICES.md
 3. 补一份面向外部的 `CONTRIBUTING.md` 与 `SECURITY.md`
 4. 三份上游 LICENSE 在分发时随包提供
 
-## 待人工执行的两步
+## 发布结果（2026-10-19）
 
 工具无法代替的仅剩两步：
 
@@ -128,5 +128,5 @@ F: 盘不记录 ownership 导致的 dubious ownership 报错）：
 - [x] 根目录有 `LICENSE`（Apache-2.0）
 - [x] 根目录有 `THIRD_PARTY_NOTICES.md`，三个 MIT 上游均已记录
 - [x] `replica/README.md` 有来源声明与合规提示
-- [ ] `git init` —— **待你执行**
-- [ ] 首次 commit 并核对范围 —— **待你执行**
+- [x] `git init` —— 已执行（分支 `main`）
+- [x] 首次 commit 并核对范围 —— 已执行（commit `2472700`，630 文件 / 3.30 MB）
