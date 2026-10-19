@@ -6,7 +6,7 @@ ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个�
 
 ![ClawHermes-USB 便携运行总览](docs/assets/hero.svg)
 
-项目目标**不是 fork 上游工具**，而是在它们外面提供：便携启动器、一致的目录布局、数据隔离规则、
+> ⚠️ **重要：本目录是「发行版（release）」，不是「开发仓库（source repo）」**
 服务适配器、备份流程和本地门户，让用户能在不同 Windows 机器之间带走自己的 agent 环境，并尽量减少对宿主机的污染。
 
 > 开发标注：本项目开发过程中使用了 [Superpowers](https://github.com/obra/superpowers)、
@@ -73,6 +73,9 @@ GUI 左侧导航包含：安装、启停服务、OpenClaw 聊天、Hermes Web UI
 
 ### 开发者
 
+> **注意**：以下步骤需要**完整源码仓库**（含 `package.json` 与 `core/node/src/`）。
+> 当前目录是发行版，执行会报 `npm error enoent`。
+
 ```powershell
 npm install
 npm run build
@@ -83,6 +86,13 @@ npm test
 
 ```powershell
 launcher/windows/ClawHermes-Control.vbs
+```
+
+若你只有发行版目录，可先跑已经可用的复刻子系统测试：
+
+```powershell
+cd replica
+npm test
 ```
 
 更完整的本地运行说明见 [开发者本地运行指南](docs/developer-local-runbook.zh-CN.md)。
@@ -275,7 +285,42 @@ npm test
 
 ---
 
-## 八、核心文档
+## 八、目录现状（重要）
+
+> 当前 `F:\DTC` 是**从 U 盘拷贝的发行版**，不是完整开发仓库。
+
+### 有
+
+| 目录 / 文件 | 说明 |
+|---|---|
+| `core/node/dist/` | 34 个已编译 JS，可直接 `node` 运行（源码不在本目录） |
+| `apps/` | openclaw / hermes-agent / hermes-web-ui 三个上游 checkout |
+| `skills/` | 90 个技能包 |
+| `config/` `adapters/` `portal/` `docs/` | 配置、适配器契约、门户、全套文档 |
+| `replica/` | 编排层复刻实现（82 个测试通过） |
+
+### 没有
+
+| 缺失项 | 影响 |
+|---|---|
+| `package.json` `tsconfig.json` | 无法 `npm install` / `npm run build` / `npm test` |
+| `core/node/src/` | 无法修改核心逻辑，只能改 `dist/*.js` |
+| `launcher/` | README 引用但实际不存在（VBS / BAT / PyQt 入口） |
+| `scripts/` | 自动化脚本目录不存在 |
+
+### 三条应对路线
+
+详见 [docs/RECOVERY-PLAN.md](docs/RECOVERY-PLAN.md)：
+
+- **路线 A**：反向还原 `dist` 为源码工程
+- **路线 B**：以 `replica/` 为基础向上长成完整产品
+- **路线 C**：只修文档，承认是发行版
+
+> **如果你手上有原始开发仓库（含 `src/` 与 `package.json`），优先用真源码，不要还原。**
+
+---
+
+## 九、核心文档
 
 | 中文 | 英文 |
 |---|---|
@@ -290,6 +335,7 @@ npm test
 | [发布检查清单](docs/release-checklist.zh-CN.md) | [Release Checklist](docs/release-checklist.md) |
 | [上游集成说明](docs/upstream-integration.zh-CN.md) | [Upstream Integration](docs/upstream-integration.md) |
 | [WSL2 Rootfs 产物策略](docs/wsl-rootfs-artifacts.zh-CN.md) | [WSL Rootfs Artifacts](docs/wsl-rootfs-artifacts.md) |
+| [**续建计划**](docs/RECOVERY-PLAN.md) | — |
 | [Electrobun 控制壳](docs/electrobun-control-shell.zh-CN.md) | — |
 | [便携数据](docs/portable-data.zh-CN.md) | [Portable Data](docs/portable-data.md) |
 | [Windows 运行时](docs/windows-runtime.zh-CN.md) | [Windows Runtime](docs/windows-runtime.md) |
@@ -297,7 +343,7 @@ npm test
 
 ---
 
-## 九、设计目标
+## 十、设计目标
 
 ![ClawHermes-USB 运行时架构](docs/assets/runtime-architecture.svg)
 
@@ -309,7 +355,7 @@ npm test
 
 ---
 
-## 十、其他
+## 十一、其他
 
 - 贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)
 - 第三方组件与许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
