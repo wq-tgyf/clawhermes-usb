@@ -1,79 +1,111 @@
 # ClawHermes-USB
 
-ClawHermes-USB is a Windows-first portable runtime suite for running [OpenClaw](https://github.com/openclaw/openclaw), [Hermes Agent](https://github.com/NousResearch/hermes-agent), and [EKKOLearnAI/hermes-web-ui](https://github.com/EKKOLearnAI/hermes-web-ui) from a USB drive.
+ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个项目目录在 U 盘上运行
+[OpenClaw](https://github.com/openclaw/openclaw)、[Hermes Agent](https://github.com/NousResearch/hermes-agent)
+和 [EKKOLearnAI/hermes-web-ui](https://github.com/EKKOLearnAI/hermes-web-ui)。
 
-![ClawHermes-USB portable runtime overview](docs/assets/hero.svg)
+![ClawHermes-USB 便携运行总览](docs/assets/hero.svg)
 
-The project goal is not to fork these upstream tools. It provides a portable launcher, consistent directory layout, data isolation rules, service adapters, backup workflow, and a local portal so users can carry their agent environment between Windows machines with minimal host pollution.
+项目目标**不是 fork 上游工具**，而是在它们外面提供：便携启动器、一致的目录布局、数据隔离规则、
+服务适配器、备份流程和本地门户，让用户能在不同 Windows 机器之间带走自己的 agent 环境，并尽量减少对宿主机的污染。
 
-Development note: this project was developed with assistance from [Superpowers](https://github.com/obra/superpowers), the OpenAI ChatGPT 5.5 model, and OpenAI Codex.
+> 开发标注：本项目开发过程中使用了 [Superpowers](https://github.com/obra/superpowers)、
+> OpenAI ChatGPT 5.5 模型和 OpenAI Codex 辅助完成。
 
-## Current Status
+---
 
-The repository now contains a runnable TypeScript + Node.js orchestration skeleton with small Batch and PowerShell launchers for Windows.
+## 一、当前状态
 
-Implemented:
+仓库现在包含可运行的 TypeScript + Node.js 编排骨架，以及面向 Windows 的小型 Batch / PowerShell 启动器。
 
-- USB root detection from launcher location.
-- Process-local portable environment variables.
-- Runtime, path, port, adapter, env-file, and readiness diagnostics.
-- Read-only setup wizard that orders diagnostics, runtime preparation, env files, optional WSL2 workflows, payload packaging, adapter setup, verification, backup, and release steps.
-- Adapter descriptor loading and dependency ordering.
-- Placeholder service start/status/stop with logs and PID metadata.
-- Managed process launch for production-ready adapters.
-- Local portal at `http://127.0.0.1:17000/` by default with live status, setup actions, adapter verification, logs, backup status, and guarded operation commands.
-- Runtime port remapping when default service or portal ports are already occupied; assignments are written to `data/tmp/ports.json`.
-- Unified local gateway/auth token defaults set to `clawhermes` for OpenClaw, Hermes Agent, and Hermes Web UI.
-- Portable backup command that writes timestamped zip archives under `data/backups/`.
-- Read-only restore planning and guarded no-overwrite restore execution for backup archives.
-- Windows-native verified adapter path for Hermes Agent using a project-local Python virtual environment and `http://127.0.0.1:8642/health`.
-- Windows-native verified adapter path for OpenClaw using Node.js, pnpm, project-local state/log paths, and `http://127.0.0.1:18789/healthz`.
-- Local control service for desktop clients at `127.0.0.1` with JSON APIs for status, install diagnostics, logs, model configuration, service start/stop, and shutdown.
-- PyQt control panel scaffold under `launcher/pyqt/` that starts or reuses the local control service when opened.
-- Optional WSL2 diagnostics, import/export, and unregister workflows remain available for adapters or operators that still need WSL.
-- Project-local WSL export backups under `data/backups/wsl/`.
-- Read-only payload inventory for ignored app checkouts, WSL rootfs archives, and WSL backups.
+### 已经实现
 
-Not implemented yet:
+- **USB 根目录检测**：从启动器所在位置向上探测，支持 `CLAWHERMES_USB_ROOT` 环境变量与提示文件覆盖。
+- **进程级便携环境变量**：不污染宿主机全局配置。
+- **诊断体系**：运行时、路径、端口、适配器、env 文件、就绪状态。
+- **只读安装向导**：按顺序编排诊断、运行时准备、env 文件、可选 WSL2 流程、payload 打包、适配器安装、验证、备份、发布。
+- **适配器描述加载**与依赖排序。
+- **服务启停**：带日志与 PID 元数据。
+- **生产级适配器**的受管进程启动。
+- **本地门户**：默认 `http://127.0.0.1:17000/`，含实时状态、安装动作、适配器验证、日志、备份状态、受保护的操作命令。
+- **端口冲突自动重映射**：默认端口被占用时自动选空闲端口，写入 `data/tmp/ports.json`。
+- **统一网关/鉴权 token**：OpenClaw、Hermes Agent、Hermes Web UI 默认均为 `clawhermes`。
+- **便携备份**：时间戳 zip 归档写入 `data/backups/`。
+- **只读恢复计划**与受保护的"不覆盖"恢复执行。
+- **Hermes Agent 的 Windows 原生适配路径**：项目内 Python venv + `http://127.0.0.1:8642/health`。
+- **OpenClaw 的 Windows 原生适配路径**：Node.js + pnpm + 项目内 state/log 路径 + `http://127.0.0.1:18789/healthz`。
+- **本地控制服务**（`127.0.0.1`）：为桌面客户端提供状态、安装诊断、日志、模型配置、服务启停、关闭的 JSON API。
+- **PyQt 控制面板**骨架位于 `launcher/pyqt/`，打开时启动或复用本地控制服务。
+- **可选 WSL2 流程**：诊断、导入/导出、注销，保留给仍需要 WSL 的适配器或运维场景。
+- **项目内 WSL 导出备份**：`data/backups/wsl/`。
+- **只读 payload 清单**：被忽略的 app checkout、WSL rootfs 归档、WSL 备份。
 
-- Automatic download, vendoring, or installation of OpenClaw, Hermes Agent, or Hermes Web UI.
-- One-click packaging of the ignored upstream app payloads and optional WSL rootfs artifacts.
-- Final PyInstaller-built `ClawHermes-Control.exe` binary in source control; build it from `launcher/pyqt/build.ps1` when packaging a release.
+### 尚未实现
 
-## Quick Start
+- OpenClaw / Hermes Agent / Hermes Web UI 的自动下载、内置化（vendoring）或安装。
+- 被忽略的上游 app payload 与可选 WSL rootfs 产物的**一键打包**。
+- 受版本控制的最终 `ClawHermes-Control.exe` 二进制；打包发布时用 `launcher/pyqt/build.ps1` 现场构建。
 
-Install dependencies and build the TypeScript core:
+---
+
+## 二、快速开始
+
+### 普通用户（U 盘使用者）
+
+**推荐入口**：双击
+
+```text
+launcher/windows/ClawHermes-Control.vbs
+```
+
+它打开图形控制中心，**不显示黑色命令窗口**。
+
+![小白用户操作路径](docs/assets/user-journey.svg)
+
+如果 VBS 被杀毒软件拦截，改用兼容入口：
+
+```text
+launcher/windows/ClawHermes-Control.bat
+```
+
+GUI 左侧导航包含：安装、启停服务、OpenClaw 聊天、Hermes Web UI、模型配置、日志、备份、修复/更新、明暗/跟随系统主题。
+偏好保存在 `data\settings\gui.json`；状态/日志/配置命令异步执行，窗口不会卡住。
+
+### 开发者
 
 ```powershell
 npm install
 npm run build
+npm test
 ```
 
-Run the Windows launchers:
+然后启动 GUI：
 
-```text
-launcher/windows/ClawHermes-Control.bat
+```powershell
 launcher/windows/ClawHermes-Control.vbs
-launcher/windows/Setup.bat
-launcher/windows/Start.bat
-launcher/windows/Status.bat
-launcher/windows/Stop.bat
-launcher/windows/Backup.bat
 ```
 
-For non-technical USB users, the recommended entry is `launcher/windows/ClawHermes-Control.vbs` because it opens the GUI without a console window. `launcher/windows/ClawHermes-Control.bat` remains as a compatibility launcher and delegates to the same VBS entry. The GUI control center opens as a single Windows window with left-side navigation for installation, service start/stop, OpenClaw Chat, Hermes Web UI, model configuration, logs, backup, repair/update, and light/dark/system theme switching. The GUI stores its preference in `data\settings\gui.json` and runs status/log/config commands asynchronously so the window remains responsive.
+更完整的本地运行说明见 [开发者本地运行指南](docs/developer-local-runbook.zh-CN.md)。
 
-The new PyQt control panel source lives under `launcher/pyqt/`. It starts a localhost control service on open, then communicates through `/api/status`, `/api/services/*`, `/api/model-config`, and `/api/logs`. Build the executable with:
+---
+
+## 三、控制中心与启动器
+
+### 图形控制中心（推荐）
+
+PyQt 控制面板源码在 `launcher/pyqt/`。它在打开时启动本地控制服务，
+通过 `/api/status`、`/api/services/*`、`/api/model-config`、`/api/logs` 通信。打包 EXE：
 
 ```powershell
 launcher/pyqt/build.ps1
 ```
 
-Model configuration in the GUI asks for API URL / Base URL, model name, API key, and whether to apply the settings to OpenClaw, Hermes, or both. The shared core command stores the redacted user-facing status under `data/settings/model-config.json`, writes OpenClaw settings under `data/openclaw/openclaw.json`, and writes Hermes settings under `data/hermes/`.
+**模型配置**填写 API URL / Base URL、模型名、API Key，并选择应用到 OpenClaw、Hermes 或两者。
+脱敏后的状态存于 `data/settings/model-config.json`，OpenClaw 配置写入 `data/openclaw/openclaw.json`，Hermes 配置写入 `data/hermes/`。
 
-The numbered double-click launchers remain available as fallback actions when the GUI is unavailable.
+### 编号双击启动器（GUI 不可用时的后备）
 
-Normal use:
+日常使用：
 
 ```text
 launcher/windows/1-Install-ClawHermes.bat
@@ -83,109 +115,207 @@ launcher/windows/4-Status-ClawHermes.bat
 launcher/windows/5-Backup-ClawHermes.bat
 ```
 
-Advanced maintenance only:
+仅供高级维护：
 
 ```text
 launcher/windows/6-Uninstall-Host-WSL-ClawHermes.bat
 launcher/windows/Tools-Repair-Or-Update-ClawHermes.bat
 ```
 
-`6-Uninstall-Host-WSL-ClawHermes.bat` is not part of normal use. It removes the managed WSL distro from the current Windows host after backup and explicit confirmation. `Tools-Repair-Or-Update-ClawHermes.bat` is for advanced maintenance and may require network access.
+> `6-Uninstall-Host-WSL-ClawHermes.bat` **不属于日常使用**。它会在备份并显式确认后，
+> 从当前 Windows 宿主机移除受管 WSL 发行版。
+> `Tools-Repair-Or-Update-ClawHermes.bat` 用于高级维护，可能需要网络访问。
 
-The normal release path is offline-first: prepare portable runtimes and app payloads before handing the USB drive to a user. Prepare WSL artifacts only when you intentionally ship a WSL-based adapter path.
+正常发布路径是**离线优先**：把便携运行时和 app payload 准备好再交给用户。
+只有在你确实要交付基于 WSL 的适配路径时，才准备 WSL 产物。
 
-`Start.bat` opens the local portal after a successful start. If port `17000` is occupied, the core selects a free local port and `Start.bat` opens the assigned URL from `data/tmp/ports.json`. All Windows Batch launchers forward the core command exit code.
+`Start.bat` 启动成功后打开本地门户。若 `17000` 被占用，核心会选一个空闲端口，
+`Start.bat` 从 `data/tmp/ports.json` 读取实际地址打开。所有 Batch 启动器都会转发核心命令的退出码。
 
-Run the Node CLI directly:
+---
+
+## 四、Node CLI 速查
 
 ```powershell
+# 安装与诊断
 node core/node/dist/clawhermes.js setup --json
 node core/node/dist/clawhermes.js setup-wizard --json
-node core/node/dist/clawhermes.js payloads --json
-node core/node/dist/clawhermes.js payload-export --dry-run --json
-node core/node/dist/clawhermes.js payload-export --confirm-export --json
-node core/node/dist/clawhermes.js wsl --distro Ubuntu --json
-node core/node/dist/clawhermes.js prepare-wsl --distro Ubuntu --dry-run --json
-node core/node/dist/clawhermes.js wsl-rootfs-guide --distro Ubuntu --json
-node core/node/dist/clawhermes.js wsl-import-plan --distro Ubuntu --json
-node core/node/dist/clawhermes.js wsl-import --distro Ubuntu --confirm-import --json
-node core/node/dist/clawhermes.js wsl-export --distro Ubuntu --confirm-export --json
-node core/node/dist/clawhermes.js wsl-unregister-plan --distro Ubuntu --json
-node core/node/dist/clawhermes.js wsl-unregister --distro Ubuntu --confirm-unregister --json
-node core/node/dist/clawhermes.js wsl-workflow hermes-agent --json
-node core/node/dist/clawhermes.js adapters --json
-node core/node/dist/clawhermes.js adapters hermes-web-ui --json
-node core/node/dist/clawhermes.js sources --json
-node core/node/dist/clawhermes.js sources hermes-web-ui --json
-node core/node/dist/clawhermes.js probe-sources hermes-web-ui --json
-node core/node/dist/clawhermes.js checkout-source hermes-web-ui --dry-run --json
-node core/node/dist/clawhermes.js setup-adapter hermes-web-ui --dry-run --json
-node core/node/dist/clawhermes.js start-adapter hermes-web-ui --dry-run --json
-node core/node/dist/clawhermes.js verify-adapter hermes-web-ui --json
-node core/node/dist/clawhermes.js mark-adapter-ready hermes-web-ui --confirm-ready --summary "Verified locally" --json
+node core/node/dist/clawhermes.js status --json
+
+# 服务启停
 node core/node/dist/clawhermes.js start --json
+node core/node/dist/clawhermes.js stop --json
 node core/node/dist/clawhermes.js control-server --port 0 --json
 node core/node/dist/clawhermes.js control-server-stop --json
-node core/node/dist/clawhermes.js status --json
+
+# 日志
 node core/node/dist/clawhermes.js logs openclaw --lines 50 --json
+
+# 模型配置
 node core/node/dist/clawhermes.js model-config --provider-type openai-compatible --api-url https://api.example.com/v1 --model demo-model --api-key sk-example --apply both --json
 node core/node/dist/clawhermes.js model-config-status --json
+
+# 备份与恢复
 node core/node/dist/clawhermes.js backup --dry-run --json
 node core/node/dist/clawhermes.js restore-plan --archive data/backups/example.zip --json
 node core/node/dist/clawhermes.js restore --archive data/backups/example.zip --confirm-restore --json
+
+# 适配器
+node core/node/dist/clawhermes.js adapters --json
+node core/node/dist/clawhermes.js verify-adapter hermes-web-ui --json
+
+# payload
+node core/node/dist/clawhermes.js payloads --json
+node core/node/dist/clawhermes.js payload-export --dry-run --json
 ```
 
-Run verification:
+**WSL2 说明**：默认适配器已不再需要 WSL2，但受保护的 WSL 流程仍可用。
+`prepare-wsl` 默认只打印计划，真正修改宿主机需要 `--confirm-install`。
+WSL2 适配器运行在 `ClawHermes-Ubuntu`；rootfs/导入导出计划以 `Ubuntu` 作为源发行版。
+`wsl-import-plan` 的 rootfs 归档由运维放置在 `runtimes/wsl/`，详见 [WSL2 Rootfs 产物策略](docs/wsl-rootfs-artifacts.md)。
 
-```powershell
-npm test
-```
+**本地鉴权说明**：默认便携 env 模板把 OpenClaw gateway token、Hermes Agent API server key、
+Hermes Web UI auth token 都设为 `clawhermes`。**在受信 localhost 之外共享运行实例前，必须先改 `config/env/*.env`。**
 
-WSL2 note: WSL2 is no longer required for the default OpenClaw and Hermes Agent adapter metadata, but the guarded WSL workflow remains available. `prepare-wsl` is guarded because enabling WSL2 and registering a Linux distribution modify the current Windows host. The command only prints a plan by default; real host preparation requires `--confirm-install`. WSL2 adapters run in `ClawHermes-Ubuntu`; rootfs/import/export planning uses `Ubuntu` as the source distro. Rootfs archives for `wsl-import-plan` are operator-managed payloads under `runtimes/wsl/`; see [WSL2 Rootfs Artifact Policy](docs/wsl-rootfs-artifacts.md).
+---
 
-Local auth note: the default portable env templates set OpenClaw gateway token, Hermes Agent API server key, and Hermes Web UI auth token to `clawhermes`. Change `config/env/*.env` before sharing a running instance beyond trusted localhost use.
+## 五、U 盘交付
 
-## Core Documents
+**不要让普通用户在 U 盘上执行 `npm install`、`pnpm install` 或 Python 依赖安装。**
+交付前应在开发机或构建机上准备好：
 
-- [PRD](docs/PRD.md)
-- [Architecture Design](docs/DESIGN.md)
-- [Adapter Contract](docs/ADAPTER_CONTRACT.md)
-- [Progress Log](docs/PROGRESS.md)
-- [Release Checklist](docs/release-checklist.md)
+- `apps/openclaw`、`apps/hermes-agent`、`apps/hermes-web-ui`（预构建产物，不是源码工作树）
+- `runtimes/`（便携 Node、Python、Git）
+- `core/node/dist`
+- 可选的 WSL rootfs 或 WSL 备份 payload（仅交付 WSL 路径时需要）
 
-Chinese versions:
+U 盘速度会影响体验，尤其是 `node_modules`、Python venv、SQLite、日志和缓存。
+建议 USB 3.x 高速 U 盘或移动 SSD，且**尽量交付预构建产物**。
 
-- [README.zh-CN.md](README.zh-CN.md)
-- [Developer Local Runbook.zh-CN](docs/developer-local-runbook.zh-CN.md)
-- [USB Deployment Guide.zh-CN](docs/usb-deployment.zh-CN.md)
-- [PRD.zh-CN.md](docs/PRD.zh-CN.md)
-- [DESIGN.zh-CN.md](docs/DESIGN.zh-CN.md)
-- [ADAPTER_CONTRACT.zh-CN.md](docs/ADAPTER_CONTRACT.zh-CN.md)
+完整说明：
 
-## Design Goals
+- [U 盘部署与交付指南](docs/usb-deployment.zh-CN.md)
+- [U 盘交付包生成 Runbook](docs/usb-release-build-runbook.zh-CN.md)
 
-![ClawHermes-USB runtime architecture](docs/assets/runtime-architecture.svg)
+---
 
-- Windows-first portable operation.
-- Keep OpenClaw, Hermes Agent, Hermes Web UI, runtime dependencies, sessions, memory, skills, logs, and workspace data on the USB drive.
-- Allow small unavoidable host traces, such as browser cache or OS-level recent-file metadata.
-- Do not require Docker for the primary path.
-- Preserve clear boundaries so future contributors can replace or extend services without rewriting the launcher.
-
-## Top-Level Layout
+## 六、目录结构
 
 ```text
 ClawHermes-USB/
-  launcher/   User-facing start, stop, setup, status, and backup scripts.
-  core/       Shared TypeScript/Node orchestration logic and Windows dispatcher.
-  adapters/   Service-specific integration descriptors and helpers.
-  apps/       Upstream application checkouts or installed packages.
-  runtimes/   Portable Node.js, Python, Git, and future platform runtimes.
-  data/       Portable state, memory, sessions, logs, cache, temp files, and backups.
-  portal/     Local unified entry page.
-  config/     Defaults, env templates, profiles, and ports.
-  scripts/    Setup, diagnostics, backup, and update automation.
-  docs/       Product and architecture documentation.
+  launcher/    面向用户的启动、停止、安装、状态、备份脚本与 GUI 入口
+  core/        共享的 TypeScript/Node 编排逻辑与 Windows 分发器
+  adapters/    各服务的集成描述符与辅助代码
+  apps/        上游应用 checkout 或已安装包（不纳入版本控制）
+  runtimes/    便携 Node.js、Python、Git 等运行时（不纳入版本控制）
+  data/        便携状态、记忆、会话、日志、缓存、临时文件、备份（不纳入版本控制）
+  portal/      本地统一入口页面
+  config/      默认值、env 模板、配置档、端口
+  scripts/     安装、诊断、备份、更新自动化
+  docs/        产品与架构文档
+  replica/     编排层复刻实现（独立子系统，见下方第七节）
+  reconstruction/business/  逆向复刻的源码底本
 ```
 
-OpenClaw and Hermes Agent now default to Windows-native verified adapters; Hermes Web UI remains a verified Windows Node adapter. The current local verification used OpenClaw `82c4fd8f56751faa03470e32f4763b7245c69b71` and Hermes Agent `f27fcb6a82b8487174ca941c15e7a5887371eede`. Large upstream checkouts, dependency folders, optional WSL rootfs archives, and WSL backups remain local ignored payloads rather than source files.
+---
+
+## 七、编排层复刻子系统（replica/）
+
+> 这是本仓库中一个**独立的逆向工程产物**，与主项目开发规则不同。
+
+`replica/` 是对发布产物 `ClawHermes-Control-Electrobun-Setup.tar.zst` 中
+**业务逻辑段的独立复刻实现**，通过静态逆向分析得出。
+
+### 为什么值得单独说明
+
+那个 8.6 MB 的 `bun/index.js` 里，真正需要复刻的业务逻辑**只有 12,906 字符**
+（23 个函数 + 19 个 RPC handler），其余 890 万字符都是可直接依赖的开源框架 Electrobun。
+这使复刻从"不可能"变成"可控"。
+
+### 验收标准是等价性，不是代码质量
+
+`replica/` 里**刻意保留**了原产物中看起来"反直觉"的行为：
+
+- `saveModelConfig` 的 `providerType` 固定 `"openai-compatible"`、`apply` 固定 `"both"`，忽略入参
+- `stopAllServices` 无论 API 成败**都**执行一次 CLI stop，返回 `apiResult ?? cliResult`
+- `pingSync` 用独立 node 子进程 + 退出码，而不是直接 fetch
+- RPC `maxRequestTime` 为 `Infinity`
+- 日志文件只 append，无轮转
+- 退出流程存在竞态，未加锁
+
+**不要"优化"它们** —— 改动前请先查 `docs/reconstruction/OBLIGATIONS.md` 中对应编号。
+
+### 验证状态
+
+| 检查 | 结果 |
+|---|---|
+| 单元测试 | 82 个，本地与 CI 全绿 |
+| 端到端验证 | 14 项真实控制服务对接，全部通过 |
+| 义务覆盖 | 72/78 = 92.3%（其余 6 条均非复刻对象） |
+| CI | Node 22 与 24 双版本通过 |
+
+运行复刻测试：
+
+```powershell
+cd replica
+npm test
+```
+
+### 逆全过程文档
+
+| 文档 | 内容 |
+|---|---|
+| [执行计划](docs/reconstruction/REPLICA-PLAN.md) | 阶段 0–5 |
+| [范围声明](docs/reconstruction/SCOPE.md) | 边界决策 |
+| [产物勘察](docs/reconstruction/ARTIFACT-INVENTORY.md) | 成员清单与代码分层 |
+| [义务清单](docs/reconstruction/OBLIGATIONS.md) | 78 条可测规格 |
+| [覆盖率](docs/reconstruction/COVERAGE.md) | 三态自评 |
+| [端到端验证](docs/reconstruction/E2E-VERIFICATION.md) | 真实对接记录 |
+| [发布记录](docs/reconstruction/RELEASE-DECISION.md) | 仓库与发布决策 |
+
+---
+
+## 八、核心文档
+
+| 中文 | 英文 |
+|---|---|
+| [PRD](docs/PRD.zh-CN.md) | [PRD](docs/PRD.md) |
+| [架构设计](docs/DESIGN.zh-CN.md) | [Design](docs/DESIGN.md) |
+| [适配器契约](docs/ADAPTER_CONTRACT.zh-CN.md) | [Adapter Contract](docs/ADAPTER_CONTRACT.md) |
+| — | [Progress Log](docs/PROGRESS.md) |
+| — | [Release Checklist](docs/release-checklist.md) |
+| [开发者本地运行指南](docs/developer-local-runbook.zh-CN.md) | — |
+| [U 盘部署指南](docs/usb-deployment.zh-CN.md) | — |
+| [U 盘交付包生成 Runbook](docs/usb-release-build-runbook.zh-CN.md) | — |
+| [发布检查清单](docs/release-checklist.zh-CN.md) | [Release Checklist](docs/release-checklist.md) |
+| [上游集成说明](docs/upstream-integration.zh-CN.md) | [Upstream Integration](docs/upstream-integration.md) |
+| [WSL2 Rootfs 产物策略](docs/wsl-rootfs-artifacts.zh-CN.md) | [WSL Rootfs Artifacts](docs/wsl-rootfs-artifacts.md) |
+| [Electrobun 控制壳](docs/electrobun-control-shell.zh-CN.md) | — |
+| [便携数据](docs/portable-data.zh-CN.md) | [Portable Data](docs/portable-data.md) |
+| [Windows 运行时](docs/windows-runtime.zh-CN.md) | [Windows Runtime](docs/windows-runtime.md) |
+| [macOS 路线图](docs/macos-roadmap.zh-CN.md) | [macOS Roadmap](docs/macos-roadmap.md) |
+
+---
+
+## 九、设计目标
+
+![ClawHermes-USB 运行时架构](docs/assets/runtime-architecture.svg)
+
+- **Windows 优先**的便携运行。
+- 把 OpenClaw、Hermes Agent、Hermes Web UI、运行时依赖、会话、记忆、技能、日志、工作区数据**全部放在 U 盘上**。
+- 允许少量不可避免的宿主机痕迹（浏览器缓存、OS 最近文件记录等）。
+- **主路径不依赖 Docker**。
+- 保持清晰边界，使后续贡献者可以替换或扩展服务，而不用重写启动器。
+
+---
+
+## 十、其他
+
+- 贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)
+- 第三方组件与许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- 项目许可证：[Apache-2.0](LICENSE)
+- 中文文档必须保持 **UTF-8 可读**，不能提交乱码（`.gitattributes` 已做保障）。
+
+当前本地验证使用：OpenClaw `82c4fd8f56751faa03470e32f4763b7245c69b71`，
+Hermes Agent `f27fcb6a82b8487174ca941c15e7a5887371eede`。
+大型上游 checkout、依赖目录、可选 WSL rootfs 归档与 WSL 备份均为本地忽略的 payload，不纳入源码。

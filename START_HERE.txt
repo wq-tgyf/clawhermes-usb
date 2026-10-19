@@ -1,25 +1,37 @@
-ClawHermes-USB portable release
+ClawHermes-USB 便携版
 
-Windows:
-1. Double-click ClawHermes-Control-Electrobun.exe when it is present.
-2. If the Electrobun launcher is not present, double-click ClawHermes-Control.exe.
-3. Use the control panel to configure API URL, model, and API key.
-4. Click Start to launch the shared payload services.
+────────────────────────────
+Windows
+────────────────────────────
+1. 若存在 ClawHermes-Control-Electrobun.exe，双击它。
+2. 若没有 Electrobun 启动器，双击 ClawHermes-Control.exe。
+3. 在控制面板里填写 API 地址、模型名、API Key。
+4. 点「启动服务」，拉起共享 payload 服务。
 
-macOS:
-1. Double-click Start-ClawHermes-Mac.command.
-2. If macOS blocks the script, open Terminal here and run:
-   chmod +x Start-ClawHermes-Mac.command Stop-ClawHermes-Mac.command
-   ./Start-ClawHermes-Mac.command
-3. The launcher opens ClawHermes-Control-Mac.app when bundled.
-4. If the app is not bundled, the launcher opens the local Portal in your browser.
+────────────────────────────
+macOS
+────────────────────────────
+1. 双击 Start-ClawHermes-Mac.command。
+2. 若 macOS 拦截该脚本，在本目录打开终端执行：
+     chmod +x Start-ClawHermes-Mac.command Stop-ClawHermes-Mac.command
+     ./Start-ClawHermes-Mac.command
+3. 若已打包 ClawHermes-Control-Mac.app，启动器会自动打开它。
+4. 若未打包，启动器会在浏览器里打开本地门户（Portal）。
 
-Runtime logs:
-- data/logs/macos-launcher.log records macOS runtime extraction, Electrobun launch probing, core startup, and Portal fallback.
-- data/logs/electrobun-control.log records the macOS Electrobun process startup, window creation, and control-server handshake.
-- data/logs/launcher.log, portal.log, openclaw.log, hermes-agent.log, and hermes-web-ui.log record the shared core and service runtime details.
+────────────────────────────
+运行日志
+────────────────────────────
+  data/logs/macos-launcher.log      macOS 运行时解压、Electrobun 启动探测、核心启动、门户回退
+  data/logs/electrobun-control.log  macOS Electrobun 进程启动、窗口创建、控制服务握手
+  data/logs/launcher.log            共享核心启动器
+  data/logs/portal.log              本地门户
+  data/logs/openclaw.log            OpenClaw 服务
+  data/logs/hermes-agent.log        Hermes Agent 服务
+  data/logs/hermes-web-ui.log       Hermes Web UI 服务
 
-Release notes:
-- Windows and macOS share core, adapters, apps, portal, config, data, and skills.
-- Platform-specific launchers and runtimes stay at the release root or under runtimes/.
-- release-manifest.json records copied payloads, entrypoints, and warnings.
+────────────────────────────
+发布说明
+────────────────────────────
+- Windows 与 macOS 共享 core、adapters、apps、portal、config、data、skills。
+- 平台相关的启动器与运行时放在发布根目录，或 runtimes/ 下。
+- release-manifest.json 记录已复制的 payload、入口点与警告信息。

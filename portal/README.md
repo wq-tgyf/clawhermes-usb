@@ -1,28 +1,32 @@
-# Portal
+# 本地门户（Portal）
 
-The portal will be the local unified entry page for ClawHermes-USB.
+统一的本地入口页面，由 `core/` 的 `portal-server.js` 提供。
 
-Default URL:
+## 默认地址
 
 ```text
 http://127.0.0.1:17000/
 ```
 
-Planned MVP content:
+若默认端口被占用，核心会自动选一个空闲端口，实际地址写入 `data/tmp/ports.json`。
+`Start.bat` 会在启动成功后读取该文件并打开对应地址。
 
-- OpenClaw Control UI link.
-- OpenClaw WebChat link.
-- Hermes Web UI link.
-- Service health status.
-- Project root and data root.
-- Log file locations.
-- Backup and stop instructions.
+## 提供的功能
 
-The first runnable skeleton generates `portal/index.html` during
-`launcher/windows/Start.bat`. The generated page is intentionally simple: it is
-built from adapter metadata and shows project paths, placeholder service status,
-service URLs when known, and log locations.
+- 实时服务状态
+- 安装与设置动作
+- 适配器验证
+- 日志查看
+- 备份状态
+- 受保护的操作命令（需要显式确认）
 
-`portal/index.html` is a generated runtime artifact and is ignored by git. A
-richer UI and tiny local server can be added after the service lifecycle is
-stable.
+## 与桌面客户端的关系
+
+图形控制中心（`launcher/pyqt/`）与本门户**共享同一个控制服务**（`core/node/dist/control-server.js`），
+区别只是呈现方式：
+
+| | 控制中心 | 本地门户 |
+|---|---|---|
+| 形态 | 桌面窗口（PyQt / Electrobun） | 浏览器页面 |
+| 通信 | JSON API（`/api/*`） | 同左 |
+| 适用 | 普通用户日常操作 | 无需安装客户端时的快速访问 |
