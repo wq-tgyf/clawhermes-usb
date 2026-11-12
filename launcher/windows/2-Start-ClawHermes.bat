@@ -1,13 +1,16 @@
 @echo off
 chcp 65001 >nul
 setlocal
-call "%~dp0_clawhermes.bat" start
-if errorlevel 1 (
-  echo 启动失败，请查看上方输出。
+set "ROOT=%~dp0..\.."
+if not exist "%ROOT%\data\logs" mkdir "%ROOT%\data\logs"
+call "%~dp0_clawhermes.bat" start > "%ROOT%\data\logs\launcher.log" 2>&1
+set "CODE=%ERRORLEVEL%"
+type "%ROOT%\data\logs\launcher.log"
+if not "%CODE%"=="0" (
+  echo 启动失败。日志：%ROOT%\data\logs\launcher.log
   pause
   exit /b 1
 )
-set "ROOT=%~dp0..\.."
 set "NODE_BIN=%ROOT%\runtimes\windows\node\node.exe"
 if exist "%NODE_BIN%" goto portal
 set "NODE_BIN=node"

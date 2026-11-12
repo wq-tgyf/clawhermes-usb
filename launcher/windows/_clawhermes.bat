@@ -12,6 +12,12 @@ if not exist "%ROOT%\core\node\dist\clawhermes.js" (
   popd >nul
   exit /b 1
 )
+"%NODE_BIN%" --version >nul 2>&1
+if errorlevel 1 (
+  echo 未找到可用的 Node.js。请安装 Node.js 20 或更高版本，或把便携版放到 runtimes\windows\node\node.exe。
+  popd >nul
+  exit /b 1
+)
 "%NODE_BIN%" "%ROOT%\core\node\dist\clawhermes.js" %*
 set "CODE=%ERRORLEVEL%"
 popd >nul
