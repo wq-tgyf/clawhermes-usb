@@ -1,32 +1,27 @@
 # core/node/dist
 
-> **这是编译产物，不是源码。**
+> **这是编译产物，不是源码。源码位于 `core/node/src/`。**
 
 ## 这是什么
 
 本目录包含 ClawHermes-USB 编排核心的 **34 个已编译 JavaScript 文件**，
-由 TypeScript 源码编译而来（原 `core/node/src/`，**当前目录中不存在**）。
+由 `core/node/src/` 通过 `tsc` 编译生成。
 
-## 为什么可以直接运行
+## 如何构建
 
-这些文件是 CommonJS 模块，不需要构建即可执行：
-
-```powershell
-node core/node/dist/clawhermes.js status --json
-node core/node/dist/clawhermes.js control-server --port 0 --json
+```bash
+npm install
+npm run build
 ```
 
 ## 如果你想修改它
 
-**没有源码就无法按正常流程修改。** 可选做法：
+修改 `core/node/src/`，不要直接改本目录；`dist/` 会在下次构建时被覆盖。
 
-| 做法 | 说明 | 风险 |
-|---|---|---|
-| 直接改 `.js` | 能改，但下次重新构建会被覆盖 | 中 |
-| 反向还原 TS 源码 | 结构可还原，类型信息已丢失 | 中 |
-| 找回原始开发仓库 | **如果有，这是唯一正确做法** | 无 |
+当前 `src/` 是路线 A 的过渡形态：由原 `dist/` 迁入的 JavaScript，
+通过 `allowJs` 参与编译，后续按文件逐步转为 TypeScript。
 
-详见 [docs/RECOVERY-PLAN.md](../../docs/RECOVERY-PLAN.md)。
+详见 [docs/RECOVERY-PLAN.md](../../../docs/RECOVERY-PLAN.md)。
 
 ## 文件分组（便于定位）
 
@@ -46,6 +41,5 @@ node core/node/dist/clawhermes.js control-server --port 0 --json
 
 ## 已知限制
 
-- 无 `package.json`：无法 `npm install`、`npm test`
-- 无类型声明：编辑 `.js` 时没有类型提示
-- 无测试覆盖：改动没有回归保护（见续建计划阶段 2）
+- `src/` 当前仍是 JavaScript（`allowJs`），没有类型声明与类型提示
+- 仅将文件逐个转为 `.ts` 后才能获得真正的类型检查

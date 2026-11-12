@@ -1,0 +1,30 @@
+{
+  "name": "clawhermes-usb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ClawHermes-USB 便携运行套件（单仓库工程骨架）",
+  "workspaces": [
+    "core/node",
+    "replica"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspace clawhermes-core",
+    "typecheck": "npm run typecheck --workspace clawhermes-core && npm run typecheck --workspace clawhermes-replica",
+    "lint": "eslint core/node/src replica/src replica/tests --max-warnings=8",
+    "test": "npm run test --workspace clawhermes-core && npm run test --workspace clawhermes-replica",
+    "test:core": "npm run test --workspace clawhermes-core",
+    "test:replica": "npm run test --workspace clawhermes-replica",
+    "check:docs-links": "node scripts/check-docs-links.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.2"
+  }
+}

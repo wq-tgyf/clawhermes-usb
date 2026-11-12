@@ -44,8 +44,7 @@ export function readControlServerMetadata(usbRoot: string): ControlServerMetadat
 
 /** O-010 构造控制服务命令行。 */
 export function controlServerCommand(usbRoot: string): string[] {
-  const args = [...CONTROL_SERVER_ARGS];
-  args[2] = usbRoot; // --usb-root 的值
+  const args = CONTROL_SERVER_ARGS.map((arg, index) => (index === 2 ? usbRoot : arg));
   return [...nodeCommand(usbRoot), join(usbRoot, "core", "node", "dist", "clawhermes.js"), ...args];
 }
 

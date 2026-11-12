@@ -2,7 +2,7 @@
   "name": "clawhermes-core",
   "version": "0.1.0",
   "private": true,
-  "description": "ClawHermes-USB 编排核心（当前仅有编译产物 dist/，无 src/）",
+  "description": "ClawHermes-USB 编排核心（源码在 src/，构建输出 dist/）",
   "bin": {
     "clawhermes": "./dist/clawhermes.js"
   },
@@ -10,6 +10,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --test \"tests/smoke/*.test.mjs\"",
     "golden:record": "node tests/golden/record.mjs",
     "golden:check": "node tests/golden/check.mjs"

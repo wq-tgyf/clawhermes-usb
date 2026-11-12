@@ -73,26 +73,20 @@ GUI 左侧导航包含：安装、启停服务、OpenClaw 聊天、Hermes Web UI
 
 ### 开发者
 
-> **注意**：以下步骤需要**完整源码仓库**（含 `package.json` 与 `core/node/src/`）。
-> 当前目录是发行版，执行会报 `npm error enoent`。
+根目录已提供 workspace 工程骨架，常用命令：
 
 ```powershell
 npm install
-npm run build
-npm test
+npm run build        # core/node/src -> core/node/dist
+npm run typecheck    # core 与 replica 类型检查
+npm run lint         # ESLint
+npm test             # core smoke + replica 测试
 ```
 
-然后启动 GUI：
+`launcher/` 属于发行包产物，不在本仓库中；本地调试可直接运行：
 
 ```powershell
-launcher/windows/ClawHermes-Control.vbs
-```
-
-若你只有发行版目录，可先跑已经可用的复刻子系统测试：
-
-```powershell
-cd replica
-npm test
+node core/node/dist/clawhermes.js status --json
 ```
 
 更完整的本地运行说明见 [开发者本地运行指南](docs/developer-local-runbook.zh-CN.md)。
@@ -287,14 +281,17 @@ npm test
 
 ## 八、目录现状（重要）
 
-> 当前 `F:\DTC` 是**从 U 盘拷贝的发行版**，不是完整开发仓库。
+> 本仓库已按路线 A 建立工程骨架：`core/node/src/` 由原 `dist/` 迁入，
+> 通过 `allowJs` 参与编译，后续按文件逐步转为 TypeScript。
 
 ### 有
 
 | 目录 / 文件 | 说明 |
 |---|---|
-| `core/node/dist/` | 34 个已编译 JS，可直接 `node` 运行（源码不在本目录） |
-| `apps/` | openclaw / hermes-agent / hermes-web-ui 三个上游 checkout |
+| `package.json` `tsconfig*.json` `eslint.config.mjs` | 根级 workspace、类型检查、静态检查与统一命令 |
+| `core/node/src/` | 编排核心源码（过渡态 JavaScript，构建后输出 `dist/`） |
+| `core/node/dist/` | 构建产物，可直接 `node` 运行 |
+| `apps/` | openclaw / hermes-agent / hermes-web-ui 三个上游 checkout（不入库） |
 | `skills/` | 90 个技能包 |
 | `config/` `adapters/` `portal/` `docs/` | 配置、适配器契约、门户、全套文档 |
 | `replica/` | 编排层复刻实现（82 个测试通过） |
@@ -303,20 +300,18 @@ npm test
 
 | 缺失项 | 影响 |
 |---|---|
-| `package.json` `tsconfig.json` | 无法 `npm install` / `npm run build` / `npm test` |
-| `core/node/src/` | 无法修改核心逻辑，只能改 `dist/*.js` |
 | `launcher/` | README 引用但实际不存在（VBS / BAT / PyQt 入口） |
-| `scripts/` | 自动化脚本目录不存在 |
+| `apps/` `runtimes/` `data/` | 按设计不入库，需由发行包提供 |
 
-### 三条应对路线
+### 应对路线
 
 详见 [docs/RECOVERY-PLAN.md](docs/RECOVERY-PLAN.md)：
 
-- **路线 A**：反向还原 `dist` 为源码工程
-- **路线 B**：以 `replica/` 为基础向上长成完整产品
-- **路线 C**：只修文档，承认是发行版
+- **路线 A（已采纳）**：反向还原 `dist` 为源码工程，当前已完成工程骨架与源码迁入
+- 路线 B：以 `replica/` 为基础向上长成完整产品
+- 路线 C：只修文档，承认是发行版
 
-> **如果你手上有原始开发仓库（含 `src/` 与 `package.json`），优先用真源码，不要还原。**
+> **如果你手上有原始开发仓库（含 `src/` 与 `package.json`），优先用真源码，不要继续还原。**
 
 ---
 
