@@ -10,8 +10,8 @@ export function wslAdapterSetupPlan(root: string, adapter: AdapterDescriptor, se
 export function wslAdapterCommandPlan(root: string, adapter: AdapterDescriptor, serviceEnv: ServiceEnvironment, phase: string) {
   const distro = adapter.runtime?.distro;
   const diagnostics = wslDiagnostics(root, distro);
-  const workingDirectory = windowsPathToWslPath(resolveRelative(root, adapter.appDir!));
-  const commandTemplate = adapter.commands![phase] as string | undefined;
+  const workingDirectory = windowsPathToWslPath(resolveRelative(root, adapter.appDir));
+  const commandTemplate = adapter.commands[phase] as string | undefined;
   if (!commandTemplate) throw new Error(`Adapter ${adapter.id} does not declare a ${phase} command.`);
   const command = expandCommandTemplate(commandTemplate, serviceEnv.env);
   const script = [

@@ -15,7 +15,7 @@ export function payloadInventory(usbRoot: string) {
     root,
     generatedAt: new Date().toISOString(),
     wouldModify: false,
-    apps: adapters.map((adapter) => appPayload(root, adapter.id!, adapter.appDir!)),
+    apps: adapters.map((adapter) => appPayload(root, adapter.id, adapter.appDir)),
     wslRootfs: (sourceDistros as string[]).map((distro) => {
       const plan = wslImportPlan(root, { distro });
       return {

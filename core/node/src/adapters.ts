@@ -11,12 +11,30 @@ export function loadAdapters(usbRoot: string, probe: PlatformProbe = {}) {
     .filter((entry) => entry.isDirectory())
     .map((entry) => join(adapterRoot, entry.name, "adapter.json"))
     .filter((file) => existsSync(file))
-    .map((file) => JSON.parse(readFileSync(file, "utf8")))
+    .map(readAdapterDescriptor)
     .map((adapter) => applyPlatformOverride(adapter, platform))
-    .sort((a, b) => a.id!.localeCompare(b.id!));
+    .sort((a, b) => a.id.localeCompare(b.id));
 }
 
-function applyPlatformOverride(adapter: AdapterDescriptor, platform: string) {
+function readAdapterDescriptor(file: string): AdapterDescriptor {
+  const descriptor = JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>;
+  const invalidField = (path: string) => new Error(`${file}: missing or invalid adapter field "${path}"`);
+  for (const field of ["id", "displayName", "appDir", "dataDir", "logFile", "pidFile"]) {
+    if (typeof descriptor[field] !== "string") throw invalidField(field);
+  }
+  const commands = descriptor.commands;
+  if (typeof commands !== "object" || commands === null) throw invalidField("commands");
+  const commandFields = commands as Record<string, unknown>;
+  if (typeof commandFields.start !== "string") throw invalidField("commands.start");
+  // Existing descriptors use `stop: null` as the sentinel for "no stop hook".
+  if (typeof commandFields.stop !== "string" && commandFields.stop !== null) throw invalidField("commands.stop");
+  const health = descriptor.health;
+  if (typeof health !== "object" || health === null) throw invalidField("health");
+  if (typeof (health as Record<string, unknown>).type !== "string") throw invalidField("health.type");
+  return descriptor as AdapterDescriptor;
+}
+
+function applyPlatformOverride(adapter: AdapterDescriptor, platform: string): AdapterDescriptor {
   const override = adapter.platformOverrides?.[platform];
   if (!override) return adapter;
   return {
@@ -69,7 +87,7 @@ export function validateAdapter(adapter: AdapterDescriptor, knownIds: string[]) 
 
 export function integrationReadiness(adapters: AdapterDescriptor[]) {
   return adapters.map((adapter) => ({
-    id: adapter.id!,
+    id: adapter.id,
     status: adapter.integration?.status ?? "unknown",
     productionReady: adapter.integration?.productionReady === true,
     verifiedAt: adapter.integration?.verifiedAt ?? null,

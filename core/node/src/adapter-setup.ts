@@ -18,9 +18,9 @@ export function runAdapterSetup(usbRoot: string, serviceId: string, options: Run
   if (!serviceId) throw new Error("Service id is required. Example: setup-adapter hermes-web-ui --confirm-setup");
   const adapter = loadAdapters(root).find((item) => item.id === serviceId);
   if (!adapter) throw new Error(`Unknown adapter: ${serviceId}`);
-  const command = adapter.commands!.setup;
+  const command = adapter.commands.setup;
   if (!command) throw new Error(`Adapter ${serviceId} does not declare a setup command.`);
-  const workingDirectory = resolveRelative(root, adapter.appDir!);
+  const workingDirectory = resolveRelative(root, adapter.appDir);
   if (!existsSync(workingDirectory) || !directoryHasRealContent(workingDirectory)) {
     throw new Error(`App directory is not ready for setup: ${adapter.appDir}`);
   }

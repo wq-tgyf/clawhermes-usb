@@ -140,14 +140,14 @@ export async function startSkeleton(usbRoot: string, options: StartSkeletonOptio
   for (const sourceAdapter of adapters) {
     try {
       const adapter = applyRuntimePortsToAdapter(sourceAdapter, portState);
-      const serviceEnv = applyRuntimePortsToEnvironment(resolveServiceEnvironment(root, adapter.id!), portState);
-      const shouldPrepareWslPlan = adapter.runtime?.kind === "wsl2" && adapter.integration?.productionReady === true && Boolean(adapter.commands!.start);
+      const serviceEnv = applyRuntimePortsToEnvironment(resolveServiceEnvironment(root, adapter.id), portState);
+      const shouldPrepareWslPlan = adapter.runtime?.kind === "wsl2" && adapter.integration?.productionReady === true && Boolean(adapter.commands.start);
       const wslPlan = shouldPrepareWslPlan ? wslAdapterCommandPlan(root, adapter, serviceEnv, "start") : null;
       if (wslPlan && adapter.integration?.productionReady === true) {
-        assertWslReadyForAdapterDistro(root, adapter.id!, adapter.runtime?.distro);
+        assertWslReadyForAdapterDistro(root, adapter.id, adapter.runtime?.distro);
       }
       startAdapter(root, adapter, wslPlan ? { processPlan: wslManagedProcessPlan(root, wslPlan), serviceEnv, attachToParent: options.attachManagedToParent === true } : { serviceEnv, attachToParent: options.attachManagedToParent === true });
-      started.push(adapter.id!);
+      started.push(adapter.id);
     }
     catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -156,7 +156,7 @@ export async function startSkeleton(usbRoot: string, options: StartSkeletonOptio
         displayName: sourceAdapter.displayName,
         message,
       });
-      writeLog(root, sourceAdapter.id!, "ERROR", `Failed to start service: ${message}`);
+      writeLog(root, sourceAdapter.id, "ERROR", `Failed to start service: ${message}`);
     }
   }
   generatePortal(root, getStatus(root).services);
@@ -167,7 +167,7 @@ export async function startSkeleton(usbRoot: string, options: StartSkeletonOptio
 
 function adapterHasRunningPid(root: string, adapter: AdapterDescriptor) {
   try {
-    const metadata = JSON.parse(readFileSync(resolveRelative(root, adapter.pidFile!), "utf8"));
+    const metadata = JSON.parse(readFileSync(resolveRelative(root, adapter.pidFile), "utf8"));
     return metadata.placeholder === false && typeof metadata.processId === "number" && processExists(metadata.processId);
   }
   catch {
@@ -180,7 +180,7 @@ export function startSingleAdapter(usbRoot: string, serviceId: string, options: 
   if (!serviceId) throw new Error("Service id is required. Example: start-adapter hermes-web-ui --confirm-start");
   const adapter = loadAdapters(root).find((item) => item.id === serviceId);
   if (!adapter) throw new Error(`Unknown adapter: ${serviceId}`);
-  if (!adapter.commands!.start) throw new Error(`Adapter ${serviceId} does not declare a start command.`);
+  if (!adapter.commands.start) throw new Error(`Adapter ${serviceId} does not declare a start command.`);
   const portState = readRuntimePortState(root);
   const runtimeAdapter = applyRuntimePortsToAdapter(adapter, portState);
   const serviceEnv = applyRuntimePortsToEnvironment(resolveServiceEnvironment(root, serviceId), portState);
@@ -194,8 +194,8 @@ export function startSingleAdapter(usbRoot: string, serviceId: string, options: 
     confirmed: options.confirm,
     wouldModify: !options.dryRun,
     started: false,
-    command: runtimeAdapter.commands!.start,
-    appDir: resolveRelative(root, runtimeAdapter.appDir!),
+    command: runtimeAdapter.commands.start,
+    appDir: resolveRelative(root, runtimeAdapter.appDir),
     wsl: wslPlan
       ? {
         executablePath: wslPlan.executablePath,
@@ -276,7 +276,7 @@ export function getStatus(usbRoot: string) {
   const portState = readRuntimePortState(root);
   const services: ServiceStatusEntry[] = serviceOrder(root, "start").map((sourceAdapter) => {
     const adapter = applyRuntimePortsToAdapter(sourceAdapter, portState);
-    const pidFile = resolveRelative(root, adapter.pidFile!);
+    const pidFile = resolveRelative(root, adapter.pidFile);
     let status = "stopped";
     let processId: number | null = null;
     let placeholder: boolean | null = null;
@@ -323,11 +323,11 @@ export function getStatus(usbRoot: string) {
       }
     }
     return {
-      id: adapter.id!,
-      displayName: adapter.displayName!,
+      id: adapter.id,
+      displayName: adapter.displayName,
       status,
       pidFile,
-      logFile: resolveRelative(root, adapter.logFile!),
+      logFile: resolveRelative(root, adapter.logFile),
       portalUrl: adapter.portal?.url ?? null,
       processId,
       placeholder,
@@ -343,7 +343,7 @@ export function stopSkeleton(usbRoot: string) {
   const stopped: string[] = [];
   if (stopPortalServer(root)) stopped.push("portal");
   for (const adapter of serviceOrder(root, "stop")) {
-    if (stopAdapter(root, adapter)) stopped.push(adapter.id!);
+    if (stopAdapter(root, adapter)) stopped.push(adapter.id);
   }
   rmSync(runtimePortsPath(root), { force: true });
   const status = getStatus(root);

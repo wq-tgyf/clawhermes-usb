@@ -15,9 +15,32 @@ function loadAdapters(usbRoot, probe = {}) {
         .filter((entry) => entry.isDirectory())
         .map((entry) => (0, node_path_1.join)(adapterRoot, entry.name, "adapter.json"))
         .filter((file) => (0, node_fs_1.existsSync)(file))
-        .map((file) => JSON.parse((0, node_fs_1.readFileSync)(file, "utf8")))
+        .map(readAdapterDescriptor)
         .map((adapter) => applyPlatformOverride(adapter, platform))
         .sort((a, b) => a.id.localeCompare(b.id));
+}
+function readAdapterDescriptor(file) {
+    const descriptor = JSON.parse((0, node_fs_1.readFileSync)(file, "utf8"));
+    const invalidField = (path) => new Error(`${file}: missing or invalid adapter field "${path}"`);
+    for (const field of ["id", "displayName", "appDir", "dataDir", "logFile", "pidFile"]) {
+        if (typeof descriptor[field] !== "string")
+            throw invalidField(field);
+    }
+    const commands = descriptor.commands;
+    if (typeof commands !== "object" || commands === null)
+        throw invalidField("commands");
+    const commandFields = commands;
+    if (typeof commandFields.start !== "string")
+        throw invalidField("commands.start");
+    // Existing descriptors use `stop: null` as the sentinel for "no stop hook".
+    if (typeof commandFields.stop !== "string" && commandFields.stop !== null)
+        throw invalidField("commands.stop");
+    const health = descriptor.health;
+    if (typeof health !== "object" || health === null)
+        throw invalidField("health");
+    if (typeof health.type !== "string")
+        throw invalidField("health.type");
+    return descriptor;
 }
 function applyPlatformOverride(adapter, platform) {
     const override = adapter.platformOverrides?.[platform];

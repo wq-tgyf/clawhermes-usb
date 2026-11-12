@@ -152,7 +152,7 @@ function adapterVerificationSnapshot() {
     root: usbRoot,
     generatedAt: new Date().toISOString(),
     adapters: loadAdapters(usbRoot).map((adapter) => {
-      const verification = verifyAdapter(usbRoot, adapter.id!, {
+      const verification = verifyAdapter(usbRoot, adapter.id, {
         wslDiagnosticsByDistro,
         wslCommandTimeoutMs: 1500,
         probeHealth: false,
@@ -175,7 +175,7 @@ function logsSnapshot() {
   const targets = [
     "launcher",
     "portal",
-    ...adapters.map((adapter) => adapter.id!),
+    ...adapters.map((adapter) => adapter.id),
     ...adapters.map((adapter) => `setup-${adapter.id}`),
   ];
   return {

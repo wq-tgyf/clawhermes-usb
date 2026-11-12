@@ -84,7 +84,7 @@ export function adapterRuntimeRequirementDiagnostics(usbRoot: string, adapters: 
         found: diagnostic?.found === true,
         version: diagnostic?.version ?? null,
         satisfies,
-        message: runtimeRequirementMessage(adapter.id!, runtime.kind!, diagnostic?.version ?? null, versionRequirement, satisfies),
+        message: runtimeRequirementMessage(adapter.id, runtime.kind!, diagnostic?.version ?? null, versionRequirement, satisfies),
       };
     });
 }

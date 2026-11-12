@@ -41,14 +41,14 @@ interface StartAdapterOptions {
 }
 
 export function startAdapter(root: string, adapter: AdapterDescriptor, options: StartAdapterOptions = {}) {
-  const pidFile = resolveRelative(root, adapter.pidFile!);
-  const logFile = resolveRelative(root, adapter.logFile!);
-  const serviceEnv = options.serviceEnv ?? resolveServiceEnvironment(root, adapter.id!);
+  const pidFile = resolveRelative(root, adapter.pidFile);
+  const logFile = resolveRelative(root, adapter.logFile);
+  const serviceEnv = options.serviceEnv ?? resolveServiceEnvironment(root, adapter.id);
   mkdirSync(dirname(pidFile), { recursive: true });
   mkdirSync(dirname(logFile), { recursive: true });
   const existingMetadata = readReusableStartMetadata(pidFile);
   if (existingMetadata) {
-    writeLog(root, adapter.id!, "INFO", `Reused existing ${adapter.id} service metadata.`);
+    writeLog(root, adapter.id, "INFO", `Reused existing ${adapter.id} service metadata.`);
     return existingMetadata;
   }
   const metadata = shouldLaunchManagedProcess(root, adapter, options.forceManaged === true)
@@ -58,8 +58,8 @@ export function startAdapter(root: string, adapter: AdapterDescriptor, options: 
       displayName: adapter.displayName,
       status: "placeholder-started",
       startedAt: new Date().toISOString(),
-      command: adapter.commands!.start ?? null,
-      workingDirectory: resolveRelative(root, adapter.appDir!),
+      command: adapter.commands.start ?? null,
+      workingDirectory: resolveRelative(root, adapter.appDir),
       logFile,
       environment: environmentMetadata(serviceEnv),
       placeholder: true,
@@ -67,10 +67,10 @@ export function startAdapter(root: string, adapter: AdapterDescriptor, options: 
   writeFileSync(pidFile, JSON.stringify(metadata, null, 2), "utf8");
   if (metadata.placeholder) {
     appendFileSync(logFile, `${new Date().toISOString()} [${adapter.id}] [INFO] Placeholder service started.\n`);
-    writeLog(root, adapter.id!, "INFO", "Started placeholder service.");
+    writeLog(root, adapter.id, "INFO", "Started placeholder service.");
   }
   else if ("processId" in metadata) {
-    writeLog(root, adapter.id!, "INFO", `Started managed service process ${metadata.processId}.`);
+    writeLog(root, adapter.id, "INFO", `Started managed service process ${metadata.processId}.`);
   }
   return metadata;
 }
@@ -92,11 +92,11 @@ function readReusableStartMetadata(pidFile: string) {
 }
 
 function shouldLaunchManagedProcess(root: string, adapter: AdapterDescriptor, forceManaged: boolean) {
-  return (forceManaged || adapter.integration?.productionReady === true) && Boolean(adapter.commands!.start) && appDirHasRealContent(root, adapter);
+  return (forceManaged || adapter.integration?.productionReady === true) && Boolean(adapter.commands.start) && appDirHasRealContent(root, adapter);
 }
 
 function appDirHasRealContent(root: string, adapter: AdapterDescriptor) {
-  const appDir = resolveRelative(root, adapter.appDir!);
+  const appDir = resolveRelative(root, adapter.appDir);
   try {
     return existsSync(appDir) && readdirSync(appDir).some((entry) => entry !== ".gitkeep");
   }
@@ -113,12 +113,12 @@ function environmentMetadata(serviceEnv: ServiceEnvironment) {
 }
 
 function launchManagedAdapterProcess(root: string, adapter: AdapterDescriptor, serviceEnv: ServiceEnvironment, processPlan: ManagedProcessPlan | null | undefined, attachToParent = false) {
-  const commandTemplate = adapter.commands!.start;
+  const commandTemplate = adapter.commands.start;
   if (!commandTemplate) throw new Error(`Adapter ${adapter.id} has no start command.`);
   prepareManagedServiceEnvironment(root, adapter, serviceEnv);
   const command = expandCommandTemplate(commandTemplate, serviceEnv.env);
-  const workingDirectory = resolveRelative(root, adapter.appDir!);
-  const logFile = resolveRelative(root, adapter.logFile!);
+  const workingDirectory = resolveRelative(root, adapter.appDir);
+  const logFile = resolveRelative(root, adapter.logFile);
   const logFd = openSync(logFile, "a");
   const serviceStdio: "ignore" | (number | "ignore")[] = process.platform === "win32" ? "ignore" : ["ignore", logFd, logFd];
   const serviceDetached = !(process.platform === "win32" && attachToParent);
@@ -143,7 +143,7 @@ function launchManagedAdapterProcess(root: string, adapter: AdapterDescriptor, s
           windowsHide: true,
         })
         : process.platform === "win32"
-          ? throwShellManagedCommandError(adapter.id!, command)
+          ? throwShellManagedCommandError(adapter.id, command)
           : spawn(command, {
             cwd: workingDirectory,
             env: { ...process.env, ...serviceEnv.env },
@@ -555,18 +555,18 @@ function hermesWslCommandScript() {
 }
 
 export function stopAdapter(root: string, adapter: AdapterDescriptor) {
-  const pidFile = resolveRelative(root, adapter.pidFile!);
+  const pidFile = resolveRelative(root, adapter.pidFile);
   if (!existsSync(pidFile)) {
-    if (adapter.runtime?.kind === "wsl2" && adapter.commands!.stop) {
+    if (adapter.runtime?.kind === "wsl2" && adapter.commands.stop) {
       runWslStopHook(root, adapter);
-      writeLog(root, adapter.id!, "INFO", "Ran WSL2 stop hook without a managed pid file.");
+      writeLog(root, adapter.id, "INFO", "Ran WSL2 stop hook without a managed pid file.");
       return true;
     }
     return false;
   }
   const metadata = JSON.parse(readFileSync(pidFile, "utf8"));
   if (metadata.placeholder === false && metadata.processId) {
-    if (metadata.runner?.startsWith("wsl2") && adapter.commands!.stop) {
+    if (metadata.runner?.startsWith("wsl2") && adapter.commands.stop) {
       runWslStopHook(root, adapter);
     }
     try {
@@ -577,15 +577,15 @@ export function stopAdapter(root: string, adapter: AdapterDescriptor) {
     }
   }
   rmSync(pidFile, { force: true });
-  writeLog(root, adapter.id!, "INFO", metadata.placeholder === false ? "Stopped managed service." : "Stopped placeholder service.");
+  writeLog(root, adapter.id, "INFO", metadata.placeholder === false ? "Stopped managed service." : "Stopped placeholder service.");
   return true;
 }
 
 function runWslStopHook(root: string, adapter: AdapterDescriptor) {
-  const logFile = resolveRelative(root, adapter.logFile!);
+  const logFile = resolveRelative(root, adapter.logFile);
   mkdirSync(dirname(logFile), { recursive: true });
   try {
-    const serviceEnv = resolveServiceEnvironment(root, adapter.id!);
+    const serviceEnv = resolveServiceEnvironment(root, adapter.id);
     const plan = wslAdapterCommandPlan(root, adapter, serviceEnv, "stop");
     const invocation = wslExecutableInvocation(plan.executablePath, plan.args);
     const completed = spawnSync(invocation.executablePath, invocation.args, {

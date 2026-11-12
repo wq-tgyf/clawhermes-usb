@@ -37,7 +37,7 @@ export function envFileDiagnostics(usbRoot: string, adapters: AdapterDescriptor[
       seen.add(key);
       const examplePath = `${envFile}.example`;
       diagnostics.push({
-        serviceId: adapter.id!,
+        serviceId: adapter.id,
         path: envFile,
         exists: existsSync(resolveRelative(root, envFile)),
         examplePath,
@@ -132,9 +132,9 @@ export function resolveServiceEnvironment(usbRoot: string, serviceId: string): S
     env[name] = expandEnvTemplate(value, env);
   }
   if (adapter.id === "openclaw") {
-    return { root, serviceId: adapter.id!, env: withWeixinFetchCompatibility(root, env), files, messages };
+    return { root, serviceId: adapter.id, env: withWeixinFetchCompatibility(root, env), files, messages };
   }
-  return { root, serviceId: adapter.id!, env, files, messages };
+  return { root, serviceId: adapter.id, env, files, messages };
 }
 
 export function serviceEnvironmentDiagnostic(usbRoot: string, serviceId: string) {

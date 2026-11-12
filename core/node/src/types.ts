@@ -13,15 +13,15 @@ export interface PlatformInfo {
 }
 
 export interface AdapterHealthDescriptor {
-  type?: string;
+  type: string;
   url?: string;
   timeoutSeconds?: number;
 }
 
 export interface AdapterCommands {
   setup?: string;
-  start?: string;
-  stop?: string;
+  start: string;
+  stop: string | null;
   [key: string]: unknown;
 }
 
@@ -64,17 +64,17 @@ export interface AdapterPortalDescriptor {
 }
 
 export interface AdapterDescriptor {
-  id?: string;
-  displayName?: string;
+  id: string;
+  displayName: string;
   enabled?: boolean;
   type?: string;
-  appDir?: string;
-  dataDir?: string;
-  logFile?: string;
-  pidFile?: string;
-  commands?: AdapterCommands;
+  appDir: string;
+  dataDir: string;
+  logFile: string;
+  pidFile: string;
+  commands: AdapterCommands;
   env?: AdapterEnvDescriptor;
-  health?: AdapterHealthDescriptor;
+  health: AdapterHealthDescriptor;
   integration?: AdapterIntegrationDescriptor;
   runtime?: AdapterRuntimeDescriptor;
   upstream?: AdapterUpstreamDescriptor;
