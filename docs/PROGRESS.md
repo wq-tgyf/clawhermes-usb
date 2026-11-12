@@ -344,8 +344,8 @@ Changed areas:
 - `README.md`
 - `README.zh-CN.md`
 - `docs/PRD.md`
-- `docs/superpowers/specs/2026-05-06-native-pyqt-control-design.md`
-- `docs/superpowers/plans/2026-05-06-native-pyqt-control.md`
+- `docs/archive/superpowers/specs/2026-05-06-native-pyqt-control-design.md`
+- `docs/archive/superpowers/plans/2026-05-06-native-pyqt-control.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -667,7 +667,7 @@ Summary:
 
 Changed areas:
 
-- `docs/superpowers/specs/2026-05-01-windows-gui-control-center-design.md`
+- `docs/archive/superpowers/specs/2026-05-01-windows-gui-control-center-design.md`
 - `docs/PROGRESS.md`
 - `.gitignore`
 
@@ -862,7 +862,7 @@ Changed areas:
 - `launcher/windows/`
 - `tests/`
 - `portal/README.md`
-- `docs/superpowers/`
+- `docs/archive/superpowers/`
 - `.gitignore`
 
 Validation performed:
@@ -897,7 +897,7 @@ Changed areas:
 - `core/windows/ClawHermes.Core.psm1`
 - `core/windows/portal-server.ps1`
 - `tests/test_windows_core.py`
-- `docs/superpowers/plans/2026-04-30-portal-server.md`
+- `docs/archive/superpowers/plans/2026-04-30-portal-server.md`
 
 Validation performed:
 
@@ -1218,7 +1218,7 @@ Changed areas:
 - `core/node/dist/`
 - `core/windows/clawhermes.ps1`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-04-30-init-env.md`
+- `docs/archive/superpowers/plans/2026-04-30-init-env.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1250,7 +1250,7 @@ Changed areas:
 - `core/node/dist/`
 - `core/windows/clawhermes.ps1`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-04-30-service-env.md`
+- `docs/archive/superpowers/plans/2026-04-30-service-env.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1279,7 +1279,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-04-30-managed-process-launch.md`
+- `docs/archive/superpowers/plans/2026-04-30-managed-process-launch.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1307,7 +1307,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-04-30-managed-status-cleanup.md`
+- `docs/archive/superpowers/plans/2026-04-30-managed-status-cleanup.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1337,7 +1337,7 @@ Changed areas:
 - `core/node/src/types.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-04-30-structured-status-health.md`
+- `docs/archive/superpowers/plans/2026-04-30-structured-status-health.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1367,7 +1367,7 @@ Changed areas:
 - `core/node/src/types.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-http-health-checks.md`
+- `docs/archive/superpowers/plans/2026-05-01-http-health-checks.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1396,7 +1396,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-portal-health-summary.md`
+- `docs/archive/superpowers/plans/2026-05-01-portal-health-summary.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1425,7 +1425,7 @@ Changed areas:
 - `core/node/src/clawhermes.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-status-snapshot.md`
+- `docs/archive/superpowers/plans/2026-05-01-status-snapshot.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1455,7 +1455,7 @@ Changed areas:
 - `core/node/src/portal-server.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-portal-status-endpoint.md`
+- `docs/archive/superpowers/plans/2026-05-01-portal-status-endpoint.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1483,7 +1483,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-portal-refresh-script.md`
+- `docs/archive/superpowers/plans/2026-05-01-portal-refresh-script.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1514,7 +1514,7 @@ Changed areas:
 - `core/node/dist/`
 - `core/windows/clawhermes.ps1`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-log-tail-helper.md`
+- `docs/archive/superpowers/plans/2026-05-01-log-tail-helper.md`
 - `tests/test_windows_core.py`
 
 Validation performed:
@@ -1544,7 +1544,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-portable-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-portable-utils.md`
 
 Validation performed:
 
@@ -1571,7 +1571,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-adapter-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-adapter-utils.md`
 
 Validation performed:
 
@@ -1598,7 +1598,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-runtime-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-runtime-utils.md`
 
 Validation performed:
 
@@ -1625,7 +1625,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-environment-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-environment-utils.md`
 
 Validation performed:
 
@@ -1653,7 +1653,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-status-helpers.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-status-helpers.md`
 
 Validation performed:
 
@@ -1680,7 +1680,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-portal-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-portal-utils.md`
 
 Validation performed:
 
@@ -1707,7 +1707,7 @@ Changed areas:
 - `core/node/src/core.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-diagnostics-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-diagnostics-utils.md`
 
 Validation performed:
 
@@ -1735,7 +1735,7 @@ Changed areas:
 - `core/node/src/portal.ts`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-split-lifecycle-utils.md`
+- `docs/archive/superpowers/plans/2026-05-01-split-lifecycle-utils.md`
 
 Validation performed:
 
@@ -1767,7 +1767,7 @@ Changed areas:
 - `tests/test_windows_core.py`
 - `core/node/dist/`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-backup-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-backup-command.md`
 
 Validation performed:
 
@@ -1796,7 +1796,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-portal-backup-status.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-portal-backup-status.md`
 
 Validation performed:
 
@@ -1822,7 +1822,7 @@ Changed areas:
 - `README.md`
 - `README.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-update-readme-status.md`
+- `docs/archive/superpowers/plans/2026-05-01-update-readme-status.md`
 
 Validation performed:
 
@@ -1853,7 +1853,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-setup-actions.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-setup-actions.md`
 
 Validation performed:
 
@@ -1884,7 +1884,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-portal-setup-actions.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-portal-setup-actions.md`
 
 Validation performed:
 
@@ -1915,7 +1915,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-adapter-guidance-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-adapter-guidance-command.md`
 
 Validation performed:
 
@@ -1943,7 +1943,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-document-adapter-guidance-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-document-adapter-guidance-command.md`
 
 Validation performed:
 
@@ -1977,7 +1977,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-adapter-upstream-metadata.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-adapter-upstream-metadata.md`
 
 Validation performed:
 
@@ -2008,7 +2008,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-source-plan-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-source-plan-command.md`
 
 Validation performed:
 
@@ -2036,7 +2036,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-document-source-plan-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-document-source-plan-command.md`
 
 Validation performed:
 
@@ -2075,7 +2075,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-checkout-source-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-checkout-source-command.md`
 
 Validation performed:
 
@@ -2117,7 +2117,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-setup-adapter-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-setup-adapter-command.md`
 
 Validation performed:
 
@@ -2157,7 +2157,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-verify-adapter-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-verify-adapter-command.md`
 
 Validation performed:
 
@@ -2198,7 +2198,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-mark-adapter-ready-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-mark-adapter-ready-command.md`
 
 Validation performed:
 
@@ -2238,7 +2238,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-probe-sources-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-probe-sources-command.md`
 
 Validation performed:
 
@@ -2274,7 +2274,7 @@ Changed areas:
 - `core/node/src/adapter-guidance.ts`
 - `core/node/dist/adapter-guidance.js`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-fix-source-probe-buffering.md`
+- `docs/archive/superpowers/plans/2026-05-01-fix-source-probe-buffering.md`
 
 Validation performed:
 
@@ -2310,7 +2310,7 @@ Changed areas:
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/ADAPTER_CONTRACT.zh-CN.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-adapter-runtime-version-requirement.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-adapter-runtime-version-requirement.md`
 
 Validation performed:
 
@@ -2344,7 +2344,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-runtime-version-diagnostics.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-runtime-version-diagnostics.md`
 
 Validation performed:
 
@@ -2374,7 +2374,7 @@ Changed areas:
 - `core/node/dist/runtimes.js`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-runtime-plan-requirements.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-runtime-plan-requirements.md`
 
 Validation performed:
 
@@ -2445,7 +2445,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-add-start-adapter-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-add-start-adapter-command.md`
 
 Validation performed:
 
@@ -2481,7 +2481,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-promote-hermes-web-ui.md`
+- `docs/archive/superpowers/plans/2026-05-01-promote-hermes-web-ui.md`
 
 Validation performed:
 
@@ -2555,7 +2555,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-adapter-diagnostics.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-adapter-diagnostics.md`
 
 Validation performed:
 
@@ -2586,7 +2586,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-adapter-setup-plan.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-adapter-setup-plan.md`
 
 Validation performed:
 
@@ -2616,7 +2616,7 @@ Changed areas:
 - `core/node/dist/`
 - `tests/test_windows_core.py`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-adapter-start-plan.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-adapter-start-plan.md`
 
 Validation performed:
 
@@ -2652,7 +2652,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-distro-targeting.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-distro-targeting.md`
 
 Validation performed:
 
@@ -2687,7 +2687,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-preparation-command.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-preparation-command.md`
 
 Validation performed:
 
@@ -2744,7 +2744,7 @@ Changed areas:
 - `tests/test_windows_core.py`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-managed-start.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-managed-start.md`
 
 Validation performed:
 
@@ -2775,7 +2775,7 @@ Changed areas:
 - `tests/test_windows_core.py`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-setup-execution.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-setup-execution.md`
 
 Validation performed:
 
@@ -2809,7 +2809,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-workflow-guide.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-workflow-guide.md`
 
 Validation performed:
 
@@ -2843,7 +2843,7 @@ Changed areas:
 - `tests/test_windows_core.py`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-graceful-stop.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-graceful-stop.md`
 
 Validation performed:
 
@@ -2877,7 +2877,7 @@ Changed areas:
 - `README.md`
 - `docs/ADAPTER_CONTRACT.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-wsl2-import-plan.md`
+- `docs/archive/superpowers/plans/2026-05-01-wsl2-import-plan.md`
 
 Validation performed:
 
@@ -4084,7 +4084,7 @@ Changed areas:
 - `docs/release-checklist.md`
 - `README.md`
 - `docs/PROGRESS.md`
-- `docs/superpowers/plans/2026-05-01-finish-mvp-gaps.md`
+- `docs/archive/superpowers/plans/2026-05-01-finish-mvp-gaps.md`
 
 Validation performed:
 

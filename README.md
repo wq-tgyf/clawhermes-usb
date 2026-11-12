@@ -323,7 +323,6 @@ npm test
 | [架构设计](docs/DESIGN.zh-CN.md) | [Design](docs/DESIGN.md) |
 | [适配器契约](docs/ADAPTER_CONTRACT.zh-CN.md) | [Adapter Contract](docs/ADAPTER_CONTRACT.md) |
 | — | [Progress Log](docs/PROGRESS.md) |
-| — | [Release Checklist](docs/release-checklist.md) |
 | [开发者本地运行指南](docs/developer-local-runbook.zh-CN.md) | — |
 | [U 盘部署指南](docs/usb-deployment.zh-CN.md) | — |
 | [U 盘交付包生成 Runbook](docs/usb-release-build-runbook.zh-CN.md) | — |
