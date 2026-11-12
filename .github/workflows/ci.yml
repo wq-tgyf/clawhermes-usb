@@ -40,6 +40,12 @@ jobs:
       - name: Docs relative links
         run: npm run check:docs-links
 
+      - name: Release manifest consistency
+        run: npm run check:release
+
+      - name: Skills inventory
+        run: npm run check:skills
+
   core:
     name: Core Smoke & Golden (Windows)
     # golden 基线在 Windows 上录制，含路径分隔符、运行时探测与 WSL 状态，

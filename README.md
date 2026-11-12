@@ -35,7 +35,7 @@ ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个�
 - **Hermes Agent 的 Windows 原生适配路径**：项目内 Python venv + `http://127.0.0.1:8642/health`。
 - **OpenClaw 的 Windows 原生适配路径**：Node.js + pnpm + 项目内 state/log 路径 + `http://127.0.0.1:18789/healthz`。
 - **本地控制服务**（`127.0.0.1`）：为桌面客户端提供状态、安装诊断、日志、模型配置、服务启停、关闭的 JSON API。
-- **PyQt 控制面板**骨架位于 `launcher/pyqt/`，打开时启动或复用本地控制服务。
+- **Windows 批处理入口**位于 `launcher/windows/`，VBS 入口在后台启动服务并打开本地门户。
 - **可选 WSL2 流程**：诊断、导入/导出、注销，保留给仍需要 WSL 的适配器或运维场景。
 - **项目内 WSL 导出备份**：`data/backups/wsl/`。
 - **只读 payload 清单**：被忽略的 app checkout、WSL rootfs 归档、WSL 备份。
@@ -44,7 +44,7 @@ ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个�
 
 - OpenClaw / Hermes Agent / Hermes Web UI 的自动下载、内置化（vendoring）或安装。
 - 被忽略的上游 app payload 与可选 WSL rootfs 产物的**一键打包**。
-- 受版本控制的最终 `ClawHermes-Control.exe` 二进制；打包发布时用 `launcher/pyqt/build.ps1` 现场构建。
+- 受版本控制的最终 `ClawHermes-Control.exe` 二进制；图形控制壳的构建脚本属于发行包，不在本仓库。
 
 ---
 
@@ -58,7 +58,7 @@ ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个�
 launcher/windows/ClawHermes-Control.vbs
 ```
 
-它打开图形控制中心，**不显示黑色命令窗口**。
+它会在后台启动服务并打开本地门户，**不显示黑色命令窗口**。
 
 ![小白用户操作路径](docs/assets/user-journey.svg)
 
@@ -68,8 +68,8 @@ launcher/windows/ClawHermes-Control.vbs
 launcher/windows/ClawHermes-Control.bat
 ```
 
-GUI 左侧导航包含：安装、启停服务、OpenClaw 聊天、Hermes Web UI、模型配置、日志、备份、修复/更新、明暗/跟随系统主题。
-偏好保存在 `data\settings\gui.json`；状态/日志/配置命令异步执行，窗口不会卡住。
+本地门户提供状态、安装诊断、日志、模型配置、服务启停与备份入口。
+本仓库内的入口基于命令行与本地门户，不包含图形控制面板。
 
 ### 开发者
 
@@ -83,7 +83,7 @@ npm run lint         # ESLint
 npm test             # core smoke + replica 测试
 ```
 
-`launcher/` 属于发行包产物，不在本仓库中；本地调试可直接运行：
+`launcher/windows/` 提供 Windows 批处理入口；本地调试可直接运行：
 
 ```powershell
 node core/node/dist/clawhermes.js status --json
@@ -95,19 +95,20 @@ node core/node/dist/clawhermes.js status --json
 
 ## 三、控制中心与启动器
 
-### 图形控制中心（推荐）
+### 控制入口
 
-PyQt 控制面板源码在 `launcher/pyqt/`。它在打开时启动本地控制服务，
-通过 `/api/status`、`/api/services/*`、`/api/model-config`、`/api/logs` 通信。打包 EXE：
+本仓库提供 Windows 批处理入口（`launcher/windows/`）：
 
-```powershell
-launcher/pyqt/build.ps1
-```
+- `ClawHermes-Control.vbs` / `ClawHermes-Control.bat`：启动服务并打开本地门户
+- 编号脚本：安装诊断、启动、停止、状态、备份与高级维护
 
-**模型配置**填写 API URL / Base URL、模型名、API Key，并选择应用到 OpenClaw、Hermes 或两者。
+PyQt / Electrobun 图形控制壳仅在发行包中提供，源码与构建脚本不在本仓库。
+图形壳通过 `/api/status`、`/api/services/*`、`/api/model-config`、`/api/logs` 与本地控制服务通信。
+
+**模型配置**可通过门户或 CLI 完成：填写 API URL / Base URL、模型名、API Key，并选择应用到 OpenClaw、Hermes 或两者。
 脱敏后的状态存于 `data/settings/model-config.json`，OpenClaw 配置写入 `data/openclaw/openclaw.json`，Hermes 配置写入 `data/hermes/`。
 
-### 编号双击启动器（GUI 不可用时的后备）
+### 编号双击启动器（无图形壳时的后备）
 
 日常使用：
 
@@ -207,7 +208,7 @@ U 盘速度会影响体验，尤其是 `node_modules`、Python venv、SQLite、�
 
 ```text
 ClawHermes-USB/
-  launcher/    面向用户的启动、停止、安装、状态、备份脚本与 GUI 入口
+  launcher/    面向用户的启动、停止、安装、状态、备份脚本与 Windows 入口
   core/        共享的 TypeScript/Node 编排逻辑与 Windows 分发器
   adapters/    各服务的集成描述符与辅助代码
   apps/        上游应用 checkout 或已安装包（不纳入版本控制）
@@ -295,12 +296,13 @@ npm test
 | `skills/` | 88 个技能包 |
 | `config/` `adapters/` `portal/` `docs/` | 配置、适配器契约、门户、全套文档 |
 | `replica/` | 编排层复刻实现（82 个测试通过） |
+| `launcher/windows/` | Windows 批处理与 VBS 入口（启动、停止、状态、备份、维护） |
 
 ### 没有
 
 | 缺失项 | 影响 |
 |---|---|
-| `launcher/` | README 引用但实际不存在（VBS / BAT / PyQt 入口） |
+| `launcher/pyqt/` `launcher/electrobun/` | 图形控制壳仅在发行包中提供 |
 | `apps/` `runtimes/` `data/` | 按设计不入库，需由发行包提供 |
 
 ### 应对路线

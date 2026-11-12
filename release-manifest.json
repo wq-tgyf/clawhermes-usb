@@ -96,7 +96,7 @@
                           "source":  "E:\\ClawHermes-USB\\skills",
                           "target":  "E:\\ClawHermes-USB\\dist-usb\\ClawHermes\\skills",
                           "included":  true,
-                          "skillCount":  24,
+                          "skillCount":  88,
                           "policy":  "Portable skills are stored outside apps/openclaw and loaded through OpenClaw skills.load.extraDirs."
                       },
     "copiedPaths":  [

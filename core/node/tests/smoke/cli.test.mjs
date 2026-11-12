@@ -59,6 +59,18 @@ test("payloads --json 返回合法 JSON", () => {
   assert.equal(typeof parsed, "object");
 });
 
+test("payload-export --dry-run 只做计划且不写归档", () => {
+  const r = run(["payload-export", "--dry-run", "--json"]);
+  assert.equal(r.status, 0);
+  const parsed = JSON.parse(r.stdout);
+  assert.equal(parsed.dryRun, true);
+  assert.equal(parsed.created, false);
+  assert.equal(parsed.wouldModify, false);
+  assert.ok(Array.isArray(parsed.entries), "entries 应为数组");
+  assert.match(parsed.archivePath.replaceAll("\\", "/"), /\/data\/backups\//);
+  assert.equal(existsSync(parsed.archivePath), false, "dry-run 不应生成归档");
+});
+
 test("未知子命令以非零退出码结束并给出提示", () => {
   const r = run(["definitely-not-a-command", "--json"]);
   assert.notEqual(r.status, 0, "未知命令应失败");

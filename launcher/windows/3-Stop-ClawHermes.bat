@@ -1,0 +1,5 @@
+@echo off
+chcp 65001 >nul
+setlocal
+call "%~dp0_clawhermes.bat" stop
+exit /b %ERRORLEVEL%
