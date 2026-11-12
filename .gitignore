@@ -22,6 +22,10 @@ logs/
 packages/*/dist/
 node_modules/
 
+# ===== 本地生成的交付目录 =====
+dist-usb/
+*.zip
+
 # ===== 复刻工作区（大体积、可重建）=====
 reconstruction/extracted/
 tmp/
