@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runAdapterSetup = runAdapterSetup;
-const node_child_process_1 = require("node:child_process");
 const node_fs_1 = require("node:fs");
+const node_child_process_1 = require("node:child_process");
 const node_path_1 = require("node:path");
 const adapters_1 = require("./adapters");
 const command_template_1 = require("./command-template");

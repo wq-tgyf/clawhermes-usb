@@ -21,7 +21,12 @@ function adapterHealth(adapter, status, placeholder) {
         return { type, ready: false, reason: "Service is stopped.", ...(url ? { url, statusCode: null } : {}) };
     }
     if (placeholder === true) {
-        return { type, ready: false, reason: "Placeholder metadata is present, but no real process was launched.", ...(url ? { url, statusCode: null } : {}) };
+        return {
+            type,
+            ready: false,
+            reason: "Placeholder metadata is present, but no real process was launched.",
+            ...(url ? { url, statusCode: null } : {}),
+        };
     }
     if (type === "http")
         return httpAdapterHealth(adapter);
@@ -55,12 +60,24 @@ function probeHttpHealth(url, timeoutSeconds) {
         const output = execNodeHealthProbe(url, timeoutMs).trim();
         const parsed = JSON.parse(output);
         if (parsed.ok === true) {
-            return { ready: true, statusCode: parsed.statusCode ?? null, reason: `HTTP health endpoint responded with ${parsed.statusCode}.` };
+            return {
+                ready: true,
+                statusCode: parsed.statusCode ?? null,
+                reason: `HTTP health endpoint responded with ${parsed.statusCode}.`,
+            };
         }
         if (typeof parsed.statusCode === "number") {
-            return { ready: false, statusCode: parsed.statusCode, reason: `HTTP health endpoint responded with ${parsed.statusCode}.` };
+            return {
+                ready: false,
+                statusCode: parsed.statusCode,
+                reason: `HTTP health endpoint responded with ${parsed.statusCode}.`,
+            };
         }
-        return { ready: false, statusCode: null, reason: `HTTP health endpoint is unreachable: ${parsed.error ?? "request failed"}.` };
+        return {
+            ready: false,
+            statusCode: null,
+            reason: `HTTP health endpoint is unreachable: ${parsed.error ?? "request failed"}.`,
+        };
     }
     catch (error) {
         const message = error instanceof Error ? error.message : String(error);

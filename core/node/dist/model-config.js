@@ -223,17 +223,6 @@ function topLevelYamlKey(line) {
     const match = /^([A-Za-z0-9_-]+):(?:\s|$)/.exec(line);
     return match?.[1] ?? null;
 }
-function upsertManagedYamlBlock(existing, block) {
-    const start = "# ClawHermes-managed model configuration";
-    const end = "# End ClawHermes-managed model configuration";
-    const normalizedBlock = `${block}\n`;
-    const pattern = new RegExp(`${escapeRegExp(start)}[\\s\\S]*?${escapeRegExp(end)}\\r?\\n?`);
-    if (pattern.test(existing)) {
-        return ensureTrailingNewline(existing.replace(pattern, normalizedBlock));
-    }
-    const prefix = existing.trimEnd();
-    return prefix ? `${prefix}\n\n${normalizedBlock}` : normalizedBlock;
-}
 function upsertEnvValue(existing, key, value) {
     const lines = existing.split(/\r?\n/).filter((line) => line.length > 0 && !line.startsWith(`${key}=`));
     lines.push(`${key}=${value}`);
@@ -250,9 +239,6 @@ function hermesCustomProviderName(apiUrl) {
     catch {
         return "clawhermes";
     }
-}
-function ensureTrailingNewline(value) {
-    return value.endsWith("\n") ? value : `${value}\n`;
 }
 function escapeRegExp(value) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

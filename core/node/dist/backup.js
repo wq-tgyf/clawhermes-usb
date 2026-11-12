@@ -243,8 +243,9 @@ function expandArchive(archivePath, destinationPath) {
 function validateRestoreEntry(entry) {
     if (!entry || typeof entry.path !== "string")
         throw new Error("Backup manifest contains an invalid entry path.");
-    if (entry.kind !== "directory" && entry.kind !== "file")
+    if (entry.kind !== "directory" && entry.kind !== "file") {
         throw new Error(`Backup manifest contains an invalid entry kind for ${entry.path}.`);
+    }
     const normalized = (0, node_path_1.normalize)(entry.path);
     if ((0, node_path_1.isAbsolute)(entry.path) || normalized === ".." || normalized.startsWith(`..\\`) || normalized.startsWith("../")) {
         throw new Error(`Backup manifest contains an unsafe restore path: ${entry.path}`);

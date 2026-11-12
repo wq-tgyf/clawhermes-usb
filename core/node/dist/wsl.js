@@ -50,8 +50,9 @@ function wslDiagnostics(usbRoot, desiredDistro, options = {}) {
         messages.push("No registered WSL2 distribution was detected.");
     if (targetDistro && list.ok && !desired)
         messages.push(`Target WSL distribution is not registered: ${targetDistro}.`);
-    if (desired && desired.version !== 2)
+    if (desired && desired.version !== 2) {
         messages.push(`Target WSL distribution ${targetDistro} is version ${desired.version ?? "unknown"}, not WSL2.`);
+    }
     if (messages.length === 0)
         messages.push("WSL2 host diagnostics passed.");
     return {
@@ -215,7 +216,7 @@ function decodeCommandOutput(value) {
             nulCount += 1;
     }
     const decoded = nulCount > sampleLength / 4 ? value.toString("utf16le") : value.toString("utf8");
-    return decoded.replace(/\u0000/g, "");
+    return decoded.replaceAll("\u0000", "");
 }
 function normalizeWslFailure(output) {
     if (output.includes("aka.ms/wslinstall") || output.includes("wsl.exe --install")) {

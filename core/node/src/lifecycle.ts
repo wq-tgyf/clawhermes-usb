@@ -1,0 +1,655 @@
+import { execFileSync, spawn, spawnSync } from "node:child_process";
+import {
+  appendFileSync,
+  chmodSync,
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { resolveServiceEnvironment } from "./environment";
+import { resolveRelative, writeLog } from "./portable";
+import { wslAdapterCommandPlan } from "./wsl-adapter";
+import { wslExecutableInvocation } from "./wsl";
+import { expandCommandTemplate } from "./command-template";
+import { ensurePortableSkillsDir } from "./skills";
+import type { AdapterDescriptor, ServiceEnvironment } from "./types";
+
+const WEIXIN_PLUGIN_RELATIVE_DIR = join("apps", "openclaw", "node_modules", "@tencent-weixin", "openclaw-weixin");
+const WEIXIN_PLUGIN_ID = "openclaw-weixin";
+
+interface ManagedProcessPlan {
+  executablePath: string;
+  args: string[];
+  workingDirectory: string;
+  command?: string;
+  env?: Record<string, string>;
+  runner?: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface StartAdapterOptions {
+  serviceEnv?: ServiceEnvironment;
+  forceManaged?: boolean;
+  processPlan?: ManagedProcessPlan | null;
+  attachToParent?: boolean;
+}
+
+export function startAdapter(root: string, adapter: AdapterDescriptor, options: StartAdapterOptions = {}) {
+  const pidFile = resolveRelative(root, adapter.pidFile);
+  const logFile = resolveRelative(root, adapter.logFile);
+  const serviceEnv = options.serviceEnv ?? resolveServiceEnvironment(root, adapter.id);
+  mkdirSync(dirname(pidFile), { recursive: true });
+  mkdirSync(dirname(logFile), { recursive: true });
+  const existingMetadata = readReusableStartMetadata(pidFile);
+  if (existingMetadata) {
+    writeLog(root, adapter.id, "INFO", `Reused existing ${adapter.id} service metadata.`);
+    return existingMetadata;
+  }
+  const metadata = shouldLaunchManagedProcess(root, adapter, options.forceManaged === true)
+    ? launchManagedAdapterProcess(root, adapter, serviceEnv, options.processPlan, options.attachToParent === true)
+    : {
+      serviceId: adapter.id,
+      displayName: adapter.displayName,
+      status: "placeholder-started",
+      startedAt: new Date().toISOString(),
+      command: adapter.commands.start ?? null,
+      workingDirectory: resolveRelative(root, adapter.appDir),
+      logFile,
+      environment: environmentMetadata(serviceEnv),
+      placeholder: true,
+    };
+  writeFileSync(pidFile, JSON.stringify(metadata, null, 2), "utf8");
+  if (metadata.placeholder) {
+    appendFileSync(logFile, `${new Date().toISOString()} [${adapter.id}] [INFO] Placeholder service started.\n`);
+    writeLog(root, adapter.id, "INFO", "Started placeholder service.");
+  }
+  else if ("processId" in metadata) {
+    writeLog(root, adapter.id, "INFO", `Started managed service process ${metadata.processId}.`);
+  }
+  return metadata;
+}
+
+function readReusableStartMetadata(pidFile: string) {
+  if (!existsSync(pidFile)) return null;
+  try {
+    const metadata = JSON.parse(readFileSync(pidFile, "utf8"));
+    if (metadata.placeholder === true) return metadata;
+    if (metadata.placeholder === false && typeof metadata.processId === "number" && processExists(metadata.processId)) {
+      return metadata;
+    }
+  }
+  catch {
+    // Corrupt pid files are treated as stale and replaced by a fresh launch.
+  }
+  rmSync(pidFile, { force: true });
+  return null;
+}
+
+function shouldLaunchManagedProcess(root: string, adapter: AdapterDescriptor, forceManaged: boolean) {
+  return (forceManaged || adapter.integration?.productionReady === true) && Boolean(adapter.commands.start) && appDirHasRealContent(root, adapter);
+}
+
+function appDirHasRealContent(root: string, adapter: AdapterDescriptor) {
+  const appDir = resolveRelative(root, adapter.appDir);
+  try {
+    return existsSync(appDir) && readdirSync(appDir).some((entry) => entry !== ".gitkeep");
+  }
+  catch {
+    return false;
+  }
+}
+
+function environmentMetadata(serviceEnv: ServiceEnvironment) {
+  return {
+    files: serviceEnv.files,
+    variables: Object.keys(serviceEnv.env).sort(),
+  };
+}
+
+function launchManagedAdapterProcess(root: string, adapter: AdapterDescriptor, serviceEnv: ServiceEnvironment, processPlan: ManagedProcessPlan | null, attachToParent = false) {
+  const commandTemplate = adapter.commands.start;
+  if (!commandTemplate) throw new Error(`Adapter ${adapter.id} has no start command.`);
+  prepareManagedServiceEnvironment(root, adapter, serviceEnv);
+  const command = expandCommandTemplate(commandTemplate, serviceEnv.env);
+  const workingDirectory = resolveRelative(root, adapter.appDir);
+  const logFile = resolveRelative(root, adapter.logFile);
+  const logFd = openSync(logFile, "a");
+  const serviceStdio: "ignore" | (number | "ignore")[] = process.platform === "win32" ? "ignore" : ["ignore", logFd, logFd];
+  const serviceDetached = !(process.platform === "win32" && attachToParent);
+  try {
+    const nativePlan = processPlan ? null : nativeManagedProcessPlan(command);
+    const child = processPlan
+      ? spawn(processPlan.executablePath, processPlan.args, {
+        cwd: processPlan.workingDirectory,
+        env: { ...process.env, ...(processPlan.env ?? {}) },
+        detached: serviceDetached,
+        shell: false,
+        stdio: serviceStdio,
+        windowsHide: true,
+      })
+      : nativePlan
+        ? spawn(nativePlan.executablePath, nativePlan.args, {
+          cwd: workingDirectory,
+          env: { ...process.env, ...serviceEnv.env },
+          detached: serviceDetached,
+          shell: false,
+          stdio: serviceStdio,
+          windowsHide: true,
+        })
+        : process.platform === "win32"
+          ? throwShellManagedCommandError(adapter.id, command)
+          : spawn(command, {
+            cwd: workingDirectory,
+            env: { ...process.env, ...serviceEnv.env },
+            detached: serviceDetached,
+            shell: true,
+            stdio: serviceStdio,
+            windowsHide: true,
+          });
+    child.on("error", (error) => {
+      appendFileSync(logFile, `${new Date().toISOString()} [${adapter.id}] [ERROR] Managed service spawn failed: ${error.message}\n`, "utf8");
+    });
+    if (!child.pid || child.pid <= 0) {
+      if (child.pid && child.pid > 0) child.kill();
+      throw new Error(`Adapter ${adapter.id} managed service did not expose a valid process id.`);
+    }
+    child.unref();
+    return {
+      serviceId: adapter.id,
+      displayName: adapter.displayName,
+      status: "running",
+      processId: child.pid,
+      startedAt: new Date().toISOString(),
+      command: processPlan?.command ?? command,
+      workingDirectory: processPlan?.workingDirectory ?? workingDirectory,
+      logFile,
+      environment: environmentMetadata(serviceEnv),
+      placeholder: false,
+      ...(processPlan?.runner ? { runner: processPlan.runner } : {}),
+      ...(processPlan?.metadata ?? {}),
+    };
+  }
+  finally {
+    closeSync(logFd);
+  }
+}
+
+function throwShellManagedCommandError(serviceId: string, command: string): never {
+  throw new Error(`Adapter ${serviceId} start command cannot be launched without a shell on Windows: ${command}. `
+    + "Use a simple executable-plus-arguments command so ClawHermes can start it without opening cmd.exe.");
+}
+
+function prepareManagedServiceEnvironment(root: string, adapter: AdapterDescriptor, serviceEnv: ServiceEnvironment) {
+  ensureHermesConfigFile(serviceEnv);
+  if (adapter.id === "openclaw") {
+    prepareOpenClawEnvironment(root, serviceEnv);
+  }
+  if (adapter.id === "hermes-web-ui") {
+    prepareHermesWebUiEnvironment(root, serviceEnv);
+  }
+}
+
+function ensureHermesConfigFile(serviceEnv: ServiceEnvironment) {
+  const hermesHome = serviceEnv.env.HERMES_HOME;
+  if (!hermesHome) return;
+  const profileDir = activeHermesProfileDir(hermesHome);
+  mkdirSync(profileDir, { recursive: true });
+  const configPath = join(profileDir, "config.yaml");
+  if (!existsSync(configPath)) {
+    writeFileSync(configPath, "{}\n", "utf8");
+  }
+}
+
+function activeHermesProfileDir(hermesHome: string) {
+  const activeProfilePath = join(hermesHome, "active_profile");
+  try {
+    const profileName = readFileSync(activeProfilePath, "utf8").trim();
+    if (profileName && profileName !== "default") {
+      const profileDir = join(hermesHome, "profiles", profileName);
+      if (existsSync(profileDir)) return profileDir;
+    }
+  }
+  catch {
+    // Missing active_profile means Hermes uses the default profile.
+  }
+  return hermesHome;
+}
+
+function prepareOpenClawEnvironment(root: string, serviceEnv: ServiceEnvironment) {
+  const configPath = serviceEnv.env.OPENCLAW_CONFIG_PATH || join(root, "data", "openclaw", "openclaw.json");
+  mkdirSync(dirname(configPath), { recursive: true });
+  const existing = readJsonObject(configPath);
+  const gateway = objectValue(existing.gateway);
+  const logging = objectValue(existing.logging);
+  const skills = objectValue(existing.skills);
+  const skillsLoad = objectValue(skills.load);
+  const plugins = objectValue(existing.plugins);
+  const pluginsLoad = objectValue(plugins.load);
+  const pluginsEntries = objectValue(plugins.entries);
+  const portableSkillsDir = ensurePortableSkillsDir(root);
+  const token = serviceEnv.env.OPENCLAW_GATEWAY_TOKEN || "clawhermes";
+  const runtimeLogPath = resolveRelative(root, "data/logs/openclaw-runtime.log");
+  const weixinPluginPath = resolveRelative(root, WEIXIN_PLUGIN_RELATIVE_DIR);
+  const weixinPluginExists = existsSync(weixinPluginPath);
+  const pluginPaths = weixinPluginExists
+    ? appendUniquePathEntry(removeMatchingPathEntries(pluginsLoad.paths, isWeixinPluginPath), weixinPluginPath)
+    : removeMatchingPathEntries(pluginsLoad.paths, isWeixinPluginPath);
+  writeFileSync(configPath, `${JSON.stringify({
+    ...existing,
+    gateway: {
+      ...gateway,
+      mode: "local",
+      bind: "loopback",
+      auth: {
+        ...objectValue(gateway.auth),
+        mode: "token",
+        token,
+      },
+    },
+    logging: {
+      ...logging,
+      file: runtimeLogPath,
+    },
+    skills: {
+      ...skills,
+      load: {
+        ...skillsLoad,
+        extraDirs: appendUniquePathEntry(removeMatchingPathEntries(existingPathEntries(skillsLoad.extraDirs), isClawHermesPortableSkillsPath), portableSkillsDir),
+      },
+    },
+    plugins: {
+      ...plugins,
+      load: {
+        ...pluginsLoad,
+        paths: pluginPaths,
+      },
+      entries: {
+        ...pluginsEntries,
+        ...(weixinPluginExists
+          ? {
+            [WEIXIN_PLUGIN_ID]: {
+              ...objectValue(pluginsEntries[WEIXIN_PLUGIN_ID]),
+              enabled: true,
+            },
+          }
+          : {}),
+      },
+    },
+  }, null, 2)}\n`, "utf8");
+}
+
+function readJsonObject(path: string) {
+  try {
+    return objectValue(JSON.parse(readFileSync(path, "utf8")));
+  }
+  catch {
+    return {};
+  }
+}
+
+function objectValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function appendUniquePathEntry(value: unknown, pathValue: string) {
+  const entries = Array.isArray(value) ? value.filter((item) => typeof item === "string" && item.trim().length > 0) : [];
+  const normalizedTarget = normalizePathForComparison(pathValue);
+  const hasTarget = entries.some((item) => normalizePathForComparison(item) === normalizedTarget);
+  return hasTarget ? entries : [...entries, pathValue];
+}
+
+function existingPathEntries(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item) => typeof item === "string" && item.trim().length > 0 && existsSync(item))
+    : [];
+}
+
+function removeMatchingPathEntries(value: unknown, predicate: (item: string) => boolean) {
+  return Array.isArray(value)
+    ? value.filter((item) => typeof item === "string" && item.trim().length > 0 && !predicate(item))
+    : [];
+}
+
+function isWeixinPluginPath(pathValue: string) {
+  return normalizePathForComparison(pathValue).endsWith(pathSuffixForComparison(WEIXIN_PLUGIN_RELATIVE_DIR));
+}
+
+function isClawHermesPortableSkillsPath(pathValue: string) {
+  const normalized = normalizePathForComparison(pathValue).replace(/[\\/]+/g, "\\");
+  if (!normalized.endsWith("\\skills")) return false;
+  let rootCandidate;
+  try {
+    rootCandidate = dirname(resolve(pathValue));
+  }
+  catch {
+    return false;
+  }
+  return existsSync(join(rootCandidate, "clawhermes-usb-root.txt"))
+    || existsSync(join(rootCandidate, "core", "node", "dist", "clawhermes.js"));
+}
+
+function pathSuffixForComparison(pathValue: string) {
+  return `${pathValue.replace(/[\\/]+/g, "\\").replace(/[\\/]+$/, "").toLowerCase()}`;
+}
+
+function normalizePathForComparison(pathValue: string) {
+  try {
+    return resolve(pathValue).replace(/[\\/]+$/, "").toLowerCase();
+  }
+  catch {
+    return pathValue.replace(/[\\/]+$/, "").toLowerCase();
+  }
+}
+
+function nativeManagedProcessPlan(command: string) {
+  if (/[&|<>]/.test(command)) return null;
+  const parts = splitCommandLine(command);
+  if (parts.length === 0) return null;
+  return { executablePath: parts[0], args: parts.slice(1) };
+}
+
+function splitCommandLine(command: string) {
+  const parts: string[] = [];
+  let current = "";
+  let quote: string | null = null;
+  for (const character of command) {
+    if ((character === "\"" || character === "'") && (!quote || quote === character)) {
+      quote = quote ? null : character;
+      continue;
+    }
+    if (!quote && /\s/.test(character)) {
+      if (current) {
+        parts.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current += character;
+  }
+  if (current) parts.push(current);
+  return parts;
+}
+
+function prepareHermesWebUiEnvironment(root: string, serviceEnv: ServiceEnvironment) {
+  const home = serviceEnv.env.HOME || join(root, "data", "home");
+  const profileDir = join(home, ".hermes");
+  mkdirSync(profileDir, { recursive: true });
+  const configPath = join(profileDir, "config.yaml");
+  writeFileSync(configPath, hermesWebUiProfileConfig(serviceEnv), "utf8");
+  const envPath = join(profileDir, ".env");
+  const apiKey = serviceEnv.env.API_SERVER_KEY || serviceEnv.env.AUTH_TOKEN || "clawhermes";
+  if (!existsSync(envPath)) {
+    writeFileSync(envPath, `API_SERVER_KEY=${apiKey}\n`, "utf8");
+  }
+  else {
+    const existing = readFileSync(envPath, "utf8");
+    if (!/^API_SERVER_KEY\s*=/m.test(existing)) {
+      const separator = existing.endsWith("\n") || existing.length === 0 ? "" : "\n";
+      appendFileSync(envPath, `${separator}API_SERVER_KEY=${apiKey}\n`, "utf8");
+    }
+  }
+  if (serviceEnv.env.CLAWHERMES_PLATFORM === "darwin" || process.platform === "darwin") {
+    prepareHermesWebUiMacEnvironment(root, serviceEnv);
+    return;
+  }
+  prepareHermesWebUiWindowsEnvironment(root, serviceEnv);
+}
+
+function prepareHermesWebUiWindowsEnvironment(root: string, serviceEnv: ServiceEnvironment) {
+  const shimDir = join(root, "data", "tmp", "bin", "hermes-web-ui");
+  writeHermesWebUiShim(shimDir);
+  const agentRoot = join(root, "apps", "hermes-agent");
+  const portablePython = join(root, "runtimes", "windows", "python", "python.exe");
+  const agentSitePackages = join(agentRoot, ".venv", "Lib", "site-packages");
+  const powershell = join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+  serviceEnv.env.HERMES_BIN = powershell;
+  serviceEnv.env.HERMES_AGENT_ROOT = serviceEnv.env.HERMES_AGENT_ROOT || agentRoot;
+  serviceEnv.env.HERMES_AGENT_BRIDGE_PYTHON = serviceEnv.env.HERMES_AGENT_BRIDGE_PYTHON || portablePython;
+  serviceEnv.env.PYTHONNOUSERSITE = "1";
+  serviceEnv.env.PYTHONUTF8 = "1";
+  serviceEnv.env.PYTHONPATH = [agentRoot, agentSitePackages, serviceEnv.env.PYTHONPATH || ""].filter(Boolean).join(";");
+  serviceEnv.env.CLAWHERMES_HERMES_WSL_DISTRO = serviceEnv.env.CLAWHERMES_HERMES_WSL_DISTRO || "ClawHermes-Ubuntu";
+  serviceEnv.env.PSExecutionPolicyPreference = "Bypass";
+  serviceEnv.env.PATH = [shimDir, serviceEnv.env.PATH || process.env.PATH || ""].filter(Boolean).join(";");
+}
+
+function prepareHermesWebUiMacEnvironment(root: string, serviceEnv: ServiceEnvironment) {
+  const shimDir = join(root, "data", "tmp", "bin", "hermes-web-ui");
+  const hermesBin = join(shimDir, "hermes");
+  writeHermesWebUiMacShim(hermesBin);
+  serviceEnv.env.HERMES_BIN = hermesBin;
+  serviceEnv.env.API_SERVER_KEY = serviceEnv.env.API_SERVER_KEY || serviceEnv.env.AUTH_TOKEN || "clawhermes";
+  serviceEnv.env.PYTHONNOUSERSITE = "1";
+  serviceEnv.env.PYTHONUTF8 = "1";
+  const pathSeparator = serviceEnv.env.CLAWHERMES_PATH_SEPARATOR || ":";
+  const runtimeKey = serviceEnv.env.CLAWHERMES_RUNTIME_KEY || "darwin-arm64";
+  serviceEnv.env.PYTHONPATH = [
+    join(root, "apps", "hermes-agent", "vendor", runtimeKey),
+    join(root, "apps", "hermes-agent"),
+  ].join(pathSeparator);
+  serviceEnv.env.PATH = [shimDir, serviceEnv.env.PATH || process.env.PATH || ""].filter(Boolean).join(pathSeparator);
+}
+
+function hermesWebUiProfileConfig(serviceEnv: ServiceEnvironment) {
+  const upstream = serviceEnv.env.HERMES_AGENT_API_BASE || serviceEnv.env.UPSTREAM || "http://127.0.0.1:8642";
+  let host = "127.0.0.1";
+  let port = 8642;
+  try {
+    const parsed = new URL(upstream);
+    host = parsed.hostname || host;
+    port = Number(parsed.port) || port;
+  }
+  catch {
+    // Keep defaults when the configured upstream is not a URL.
+  }
+  return [
+    "platforms:",
+    "  api_server:",
+    "    enabled: true",
+    "    key: ''",
+    "    cors_origins: '*'",
+    "    extra:",
+    `      port: ${port}`,
+    `      host: ${host}`,
+    "",
+  ].join("\n");
+}
+
+function writeHermesWebUiShim(shimDir: string) {
+  mkdirSync(shimDir, { recursive: true });
+  const commonPath = join(shimDir, "hermes-wsl-command.ps1");
+  writeFileSync(commonPath, hermesWslCommandScript(), "utf8");
+  for (const command of ["gateway", "logs", "profile", "sessions", "setup"]) {
+    writeFileSync(join(shimDir, `${command}.ps1`), hermesSubcommandScript(command), "utf8");
+  }
+}
+
+function writeHermesWebUiMacShim(hermesBin: string) {
+  mkdirSync(dirname(hermesBin), { recursive: true });
+  writeFileSync(hermesBin, [
+    "#!/usr/bin/env sh",
+    "set -u",
+    "ROOT=\"${USB_ROOT:-}\"",
+    "if [ -z \"$ROOT\" ]; then",
+    "  echo \"USB_ROOT is not set.\" >&2",
+    "  exit 1",
+    "fi",
+    "RUNTIME_KEY=\"${CLAWHERMES_RUNTIME_KEY:-}\"",
+    "if [ -z \"$RUNTIME_KEY\" ]; then",
+    "  case \"$(uname -m)\" in",
+    "    arm64) RUNTIME_KEY=\"darwin-arm64\" ;;",
+    "    x86_64) RUNTIME_KEY=\"darwin-x64\" ;;",
+    "    *) RUNTIME_KEY=\"darwin-x64\" ;;",
+    "  esac",
+    "fi",
+    "export HERMES_HOME=\"${HERMES_HOME:-$ROOT/data/hermes}\"",
+    "if [ -z \"${API_SERVER_KEY:-}\" ] && [ -n \"${AUTH_TOKEN:-}\" ]; then",
+    "  export API_SERVER_KEY=\"$AUTH_TOKEN\"",
+    "fi",
+    "export PYTHONNOUSERSITE=1",
+    "export PYTHONUTF8=1",
+    "export PYTHONPATH=\"$ROOT/apps/hermes-agent/vendor/$RUNTIME_KEY:$ROOT/apps/hermes-agent${PYTHONPATH:+:$PYTHONPATH}\"",
+    "cd \"$ROOT/apps/hermes-agent\" || exit 1",
+    "exec python3 -c \"from hermes_cli.main import main; raise SystemExit(main())\" \"$@\"",
+    "",
+  ].join("\n"), "utf8");
+  chmodSync(hermesBin, 0o755);
+}
+
+function hermesSubcommandScript(command: string) {
+  return [
+    `$env:CLAWHERMES_HERMES_SUBCOMMAND = '${command}'`,
+    `& "$PSScriptRoot\\hermes-wsl-command.ps1" @args`,
+    "exit $LASTEXITCODE",
+    "",
+  ].join("\n");
+}
+
+function hermesWslCommandScript() {
+  return [
+    "$ErrorActionPreference = 'Stop'",
+    "$subcommand = $env:CLAWHERMES_HERMES_SUBCOMMAND",
+    "if (-not $subcommand) { throw 'CLAWHERMES_HERMES_SUBCOMMAND is not set.' }",
+    "$hermesArgs = @($subcommand) + @($args)",
+    "if ($subcommand -eq 'gateway' -and $args.Count -gt 0 -and @('start', 'restart', 'stop') -contains $args[0]) {",
+    "  Write-Output 'Hermes gateway is managed by ClawHermes-USB.'",
+    "  exit 0",
+    "}",
+    "$root = $env:USB_ROOT",
+    "if (-not $root) { throw 'USB_ROOT is not set.' }",
+    "$wsl = $env:CLAWHERMES_WSL_EXE",
+    "if (-not $wsl) { $wsl = 'wsl.exe' }",
+    "$distro = $env:CLAWHERMES_HERMES_WSL_DISTRO",
+    "if (-not $distro) { $distro = 'ClawHermes-Ubuntu' }",
+    "function Convert-ToWslPath([string]$PathValue) {",
+    "  if ($PathValue -match '^([A-Za-z]):[\\\\/]*(.*)$') {",
+    "    $drive = $Matches[1].ToLowerInvariant()",
+    "    $rest = $Matches[2].Replace('\\\\', '/').TrimStart('/')",
+    "    return \"/mnt/$drive/$rest\"",
+    "  }",
+    "  return $PathValue",
+    "}",
+    "function ShellQuote([string]$Value) {",
+    "  return \"'\" + $Value.Replace(\"'\", \"'`\\\"'`\\\"'\") + \"'\"",
+    "}",
+    "$appDir = Convert-ToWslPath (Join-Path $root 'apps\\hermes-agent')",
+    "$exports = @()",
+    "foreach ($name in @('USB_ROOT', 'HERMES_HOME', 'API_SERVER_KEY', 'HOME', 'USERPROFILE')) {",
+    "  $value = [Environment]::GetEnvironmentVariable($name)",
+    "  if ($value) { $exports += \"export $name=$(ShellQuote (Convert-ToWslPath $value))\" }",
+    "}",
+    "$quotedArgs = ($hermesArgs | ForEach-Object { ShellQuote $_ }) -join ' '",
+    "$scriptParts = @($exports) + @(\"./venv/bin/hermes $quotedArgs\")",
+    "$script = $scriptParts -join ' && '",
+    "$wslArgs = @('--distribution', $distro, '--cd', $appDir, '--', 'bash', '-lc', $script)",
+    "& $wsl @wslArgs",
+    "exit $LASTEXITCODE",
+    "",
+  ].join("\n");
+}
+
+export function stopAdapter(root: string, adapter: AdapterDescriptor) {
+  const pidFile = resolveRelative(root, adapter.pidFile);
+  if (!existsSync(pidFile)) {
+    if (adapter.runtime?.kind === "wsl2" && adapter.commands.stop) {
+      runWslStopHook(root, adapter);
+      writeLog(root, adapter.id, "INFO", "Ran WSL2 stop hook without a managed pid file.");
+      return true;
+    }
+    return false;
+  }
+  const metadata = JSON.parse(readFileSync(pidFile, "utf8"));
+  if (metadata.placeholder === false && metadata.processId) {
+    if (metadata.runner?.startsWith("wsl2") && adapter.commands.stop) {
+      runWslStopHook(root, adapter);
+    }
+    try {
+      killProcessTree(metadata.processId);
+    }
+    catch {
+      // Already gone.
+    }
+  }
+  rmSync(pidFile, { force: true });
+  writeLog(root, adapter.id, "INFO", metadata.placeholder === false ? "Stopped managed service." : "Stopped placeholder service.");
+  return true;
+}
+
+function runWslStopHook(root: string, adapter: AdapterDescriptor) {
+  const logFile = resolveRelative(root, adapter.logFile);
+  mkdirSync(dirname(logFile), { recursive: true });
+  try {
+    const serviceEnv = resolveServiceEnvironment(root, adapter.id);
+    const plan = wslAdapterCommandPlan(root, adapter, serviceEnv, "stop");
+    const invocation = wslExecutableInvocation(plan.executablePath, plan.args);
+    const completed = spawnSync(invocation.executablePath, invocation.args, {
+      cwd: root,
+      env: process.env,
+      encoding: "utf8",
+      timeout: 10000,
+      windowsHide: true,
+    });
+    appendFileSync(logFile, [
+      `${new Date().toISOString()} [${adapter.id}] [INFO] WSL2 stop hook: ${plan.script}`,
+      `exitCode: ${completed.status ?? "unknown"}`,
+      completed.stdout ? `stdout:\n${completed.stdout}` : "stdout: <empty>",
+      completed.stderr ? `stderr:\n${completed.stderr}` : "stderr: <empty>",
+      completed.error ? `error: ${completed.error.message}` : "",
+      "",
+    ].filter(Boolean).join("\n"), "utf8");
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    appendFileSync(logFile, `${new Date().toISOString()} [${adapter.id}] [WARN] WSL2 stop hook failed: ${message}\n`, "utf8");
+  }
+}
+
+export function killProcessTree(pid: number) {
+  if (!Number.isInteger(pid) || pid <= 0) {
+    throw new Error(`Cannot stop managed service with invalid process id ${pid}.`);
+  }
+  if (process.platform === "win32") {
+    execFileSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore", windowsHide: true });
+    waitForProcessExit(pid);
+  }
+  else {
+    try {
+      process.kill(-pid, "SIGTERM");
+    }
+    catch {
+      process.kill(pid, "SIGTERM");
+    }
+    waitForProcessExit(pid);
+  }
+}
+
+function waitForProcessExit(pid: number, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (!processExists(pid)) {
+      return;
+    }
+    sleep(100);
+  }
+}
+
+function processExists(pid: number) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  }
+  catch {
+    return false;
+  }
+}
+
+function sleep(ms: number) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}

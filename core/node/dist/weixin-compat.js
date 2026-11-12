@@ -12,7 +12,9 @@ function withWeixinFetchCompatibility(root, env) {
         return next;
     const importOption = `--import ${(0, node_url_1.pathToFileURL)(preloadPath).href}`;
     const existing = next.NODE_OPTIONS?.trim() ?? "";
-    next.NODE_OPTIONS = existing.includes(importOption) ? existing : [importOption, existing].filter(Boolean).join(" ");
+    next.NODE_OPTIONS = existing.includes(importOption)
+        ? existing
+        : [importOption, existing].filter(Boolean).join(" ");
     return next;
 }
 function weixinFetchPreloadPath(root) {

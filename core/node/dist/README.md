@@ -18,8 +18,7 @@ npm run build
 
 修改 `core/node/src/`，不要直接改本目录；`dist/` 会在下次构建时被覆盖。
 
-当前 `src/` 是路线 A 的过渡形态：由原 `dist/` 迁入的 JavaScript，
-通过 `allowJs` 参与编译，后续按文件逐步转为 TypeScript。
+`src/` 已由原 `dist/` 迁入并全部转为 TypeScript，`dist/` 完全由 `tsc` 生成。
 
 详见 [docs/RECOVERY-PLAN.md](../../../docs/RECOVERY-PLAN.md)。
 
@@ -41,5 +40,5 @@ npm run build
 
 ## 已知限制
 
-- `src/` 当前仍是 JavaScript（`allowJs`），没有类型声明与类型提示
-- 仅将文件逐个转为 `.ts` 后才能获得真正的类型检查
+- `src/` 为 TypeScript 源码，类型检查由 `npm run typecheck` 覆盖
+- 少数从上游复刻的行为刻意保留，修改前请查阅对应文档

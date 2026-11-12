@@ -5,9 +5,9 @@ exports.wslAdapterCommandPlan = wslAdapterCommandPlan;
 exports.assertWslReadyForAdapter = assertWslReadyForAdapter;
 exports.assertWslReadyForAdapterDistro = assertWslReadyForAdapterDistro;
 exports.windowsPathToWslPath = windowsPathToWslPath;
+const command_template_1 = require("./command-template");
 const portable_1 = require("./portable");
 const wsl_1 = require("./wsl");
-const command_template_1 = require("./command-template");
 function wslAdapterSetupPlan(root, adapter, serviceEnv) {
     return wslAdapterCommandPlan(root, adapter, serviceEnv, "setup");
 }

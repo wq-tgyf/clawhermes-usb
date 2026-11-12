@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.payloadExport = payloadExport;
+const node_child_process_1 = require("node:child_process");
 const node_fs_1 = require("node:fs");
 const node_os_1 = require("node:os");
 const node_path_1 = require("node:path");
-const node_child_process_1 = require("node:child_process");
 const adapters_1 = require("./adapters");
 const portable_1 = require("./portable");
 const payloads_1 = require("./payloads");

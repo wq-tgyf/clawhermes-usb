@@ -7,9 +7,9 @@ exports.applyRuntimePortsToAdapter = applyRuntimePortsToAdapter;
 exports.applyRuntimePortsToEnvironment = applyRuntimePortsToEnvironment;
 exports.replaceLocalhostPorts = replaceLocalhostPorts;
 exports.runtimePortalUrl = runtimePortalUrl;
-const node_net_1 = require("node:net");
 const node_child_process_1 = require("node:child_process");
 const node_fs_1 = require("node:fs");
+const node_net_1 = require("node:net");
 const node_path_1 = require("node:path");
 const portable_1 = require("./portable");
 function runtimePortsPath(root) {

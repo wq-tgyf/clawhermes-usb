@@ -1,0 +1,290 @@
+import { spawnSync } from "node:child_process";
+import type { SpawnSyncReturns } from "node:child_process";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { integrationReadiness, loadAdapters } from "./adapters";
+import { envFileDiagnostics } from "./environment";
+import { getRoot, portableEnv, resolveRelative } from "./portable";
+import type { AdapterDescriptor, EnvFileDiagnostic, IntegrationReadiness } from "./types";
+
+interface CheckoutAppSourceOptions {
+  dryRun?: boolean;
+  confirm?: boolean;
+}
+
+export function adapterSetupPlan(usbRoot: string, serviceId?: string) {
+  const root = getRoot(usbRoot);
+  const adapters = loadAdapters(root);
+  const selected = serviceId ? adapters.filter((adapter) => adapter.id === serviceId) : adapters;
+  if (serviceId && selected.length === 0) throw new Error(`Unknown adapter: ${serviceId}`);
+  const readiness = new Map(integrationReadiness(adapters).map((item) => [item.id, item]));
+  const envFiles = envFileDiagnostics(root, adapters);
+  return {
+    root,
+    generatedAt: new Date().toISOString(),
+    adapters: selected.map((adapter) => adapterSetupItem(root, adapter, readiness.get(adapter.id), envFiles.filter((item) => item.serviceId === adapter.id))),
+  };
+}
+
+export function appSourcePlan(usbRoot: string, serviceId?: string) {
+  const root = getRoot(usbRoot);
+  const adapters = loadAdapters(root);
+  const selected = serviceId ? adapters.filter((adapter) => adapter.id === serviceId) : adapters;
+  if (serviceId && selected.length === 0) throw new Error(`Unknown adapter: ${serviceId}`);
+  return {
+    root,
+    generatedAt: new Date().toISOString(),
+    wouldModify: false,
+    sources: selected.map((adapter) => sourcePlanItem(root, adapter)),
+  };
+}
+
+export function probeAppSources(usbRoot: string, serviceId?: string) {
+  const root = getRoot(usbRoot);
+  const adapters = loadAdapters(root);
+  const selected = serviceId ? adapters.filter((adapter) => adapter.id === serviceId) : adapters;
+  if (serviceId && selected.length === 0) throw new Error(`Unknown adapter: ${serviceId}`);
+  return {
+    root,
+    generatedAt: new Date().toISOString(),
+    wouldModify: false,
+    sources: selected.map((adapter) => probeSource(root, adapter)),
+  };
+}
+
+export function checkoutAppSource(usbRoot: string, serviceId: string, options: CheckoutAppSourceOptions) {
+  const root = getRoot(usbRoot);
+  if (!serviceId) throw new Error("Service id is required. Example: checkout-source hermes-web-ui --confirm-checkout");
+  const adapter = loadAdapters(root).find((item) => item.id === serviceId);
+  if (!adapter) throw new Error(`Unknown adapter: ${serviceId}`);
+  if (!adapter.upstream?.repositoryUrl) throw new Error(`Adapter ${serviceId} does not declare an upstream repositoryUrl.`);
+  const source = sourcePlanItem(root, adapter);
+  const result = {
+    root,
+    serviceId,
+    displayName: adapter.displayName,
+    dryRun: options.dryRun,
+    confirmed: options.confirm,
+    wouldModify: !options.dryRun,
+    cloned: false,
+    repositoryUrl: adapter.upstream.repositoryUrl,
+    checkoutRef: adapter.upstream.checkoutRef ?? null,
+    appDir: adapter.appDir,
+    targetPath: source.targetPath,
+    command: checkoutCommand(adapter),
+    actions: checkoutActions(source.appDirExists),
+    message: options.dryRun ? `Would checkout ${serviceId} into ${adapter.appDir}.` : `Checked out ${serviceId} into ${adapter.appDir}.`,
+  };
+  if (!options.dryRun && !options.confirm) {
+    throw new Error("checkout-source modifies apps/ and may use network. Re-run with --confirm-checkout to proceed.");
+  }
+  if (source.appDirReady) {
+    throw new Error(`App directory already contains real content: ${adapter.appDir}`);
+  }
+  if (options.dryRun) return result;
+  mkdirSync(dirname(source.targetPath), { recursive: true });
+  removePlaceholderFiles(source.targetPath);
+  const completed = spawnSync("git", checkoutArgs(adapter, source.targetPath), {
+    cwd: root,
+    env: { ...process.env, ...portableEnv(root) },
+    encoding: "utf8",
+  });
+  if (completed.error) throw new Error(`git clone failed: ${completed.error.message}`);
+  if (completed.status !== 0) {
+    throw new Error(`git clone failed: ${(completed.stderr || completed.stdout || "unknown error").trim()}`);
+  }
+  return { ...result, cloned: true };
+}
+
+function probeSource(root: string, adapter: AdapterDescriptor) {
+  const upstream = adapter.upstream ?? null;
+  if (!upstream?.repositoryUrl) {
+    return {
+      id: adapter.id,
+      displayName: adapter.displayName,
+      upstream,
+      repositoryUrl: null,
+      checkoutRef: null,
+      reachable: false,
+      refFound: false,
+      wouldModify: false,
+      exitCode: null,
+      message: "Adapter does not declare an upstream repositoryUrl.",
+    };
+  }
+  const baseProbe = spawnSync("git", ["ls-remote", "--exit-code", upstream.repositoryUrl, "HEAD"], {
+    cwd: root,
+    env: { ...process.env, ...portableEnv(root) },
+    encoding: "utf8",
+    timeout: 30000,
+    windowsHide: true,
+  });
+  const reachable = !baseProbe.error && baseProbe.status === 0;
+  if (!reachable) {
+    return {
+      id: adapter.id,
+      displayName: adapter.displayName,
+      upstream,
+      repositoryUrl: upstream.repositoryUrl,
+      checkoutRef: upstream.checkoutRef ?? null,
+      reachable: false,
+      refFound: false,
+      wouldModify: false,
+      exitCode: baseProbe.status,
+      message: `Repository is not reachable: ${probeError(baseProbe)}`,
+    };
+  }
+  const ref = upstream.checkoutRef;
+  const refFound = ref ? refExists(root, upstream.repositoryUrl, ref) : true;
+  return {
+    id: adapter.id,
+    displayName: adapter.displayName,
+    upstream,
+    repositoryUrl: upstream.repositoryUrl,
+    checkoutRef: ref ?? null,
+    reachable: true,
+    refFound,
+    wouldModify: false,
+    exitCode: baseProbe.status,
+    message: ref ? (refFound ? `Repository is reachable and ref ${ref} exists.` : `Repository is reachable but ref ${ref} was not found.`) : "Repository is reachable; no checkoutRef is declared.",
+  };
+}
+
+function refExists(root: string, repositoryUrl: string, ref: string) {
+  const refProbe = spawnSync("git", ["ls-remote", "--exit-code", repositoryUrl, ref], {
+    cwd: root,
+    env: { ...process.env, ...portableEnv(root) },
+    encoding: "utf8",
+    timeout: 30000,
+    windowsHide: true,
+  });
+  return !refProbe.error && refProbe.status === 0 && refProbe.stdout.trim().length > 0;
+}
+
+function probeError(probe: SpawnSyncReturns<string>) {
+  if (probe.error) return probe.error.message;
+  return (typeof probe.stderr === "string" && probe.stderr.trim()) || (typeof probe.stdout === "string" && probe.stdout.trim()) || `exit code ${probe.status ?? "unknown"}`;
+}
+
+function sourcePlanItem(root: string, adapter: AdapterDescriptor) {
+  const appDirPath = resolveRelative(root, adapter.appDir);
+  const appDirExists = existsSync(appDirPath);
+  const appDirReady = appDirExists && directoryHasRealContent(appDirPath);
+  return {
+    id: adapter.id,
+    displayName: adapter.displayName,
+    appDir: adapter.appDir,
+    targetPath: appDirPath,
+    appDirExists,
+    appDirReady,
+    upstream: adapter.upstream ?? null,
+    checkoutCommand: checkoutCommand(adapter),
+    wouldModify: false,
+  };
+}
+
+function checkoutCommand(adapter: AdapterDescriptor) {
+  if (!adapter.upstream?.repositoryUrl) return null;
+  const branch = adapter.upstream.checkoutRef ? ` --branch ${adapter.upstream.checkoutRef}` : "";
+  return `git clone${branch} ${adapter.upstream.repositoryUrl} ${adapter.appDir}`;
+}
+
+function checkoutArgs(adapter: AdapterDescriptor, targetPath: string) {
+  const args = ["clone"];
+  if (adapter.upstream?.checkoutRef) args.push("--branch", adapter.upstream.checkoutRef);
+  args.push(adapter.upstream?.repositoryUrl ?? "", targetPath);
+  return args;
+}
+
+function checkoutActions(appDirExists: boolean) {
+  const actions: string[] = [];
+  if (!appDirExists) actions.push("Create target app directory parent.");
+  actions.push("Remove placeholder .gitkeep if present.");
+  actions.push("Run git clone for the selected adapter.");
+  return actions;
+}
+
+function removePlaceholderFiles(path: string) {
+  if (!existsSync(path)) return;
+  for (const entry of readdirSync(path)) {
+    if (entry === ".gitkeep") rmSync(join(path, entry), { force: true });
+  }
+}
+
+function adapterSetupItem(root: string, adapter: AdapterDescriptor, readiness: IntegrationReadiness | undefined, envFiles: EnvFileDiagnostic[]) {
+  const appDirExists = existsSync(resolveRelative(root, adapter.appDir));
+  const appDirReady = appDirExists && directoryHasRealContent(resolveRelative(root, adapter.appDir));
+  const dataDirExists = existsSync(resolveRelative(root, adapter.dataDir));
+  return {
+    id: adapter.id,
+    displayName: adapter.displayName,
+    enabled: adapter.enabled,
+    type: adapter.type,
+    appDir: adapter.appDir,
+    appDirExists,
+    appDirReady,
+    dataDir: adapter.dataDir,
+    dataDirExists,
+    upstream: adapter.upstream ?? null,
+    runtime: adapter.runtime ?? null,
+    commands: {
+      setup: adapter.commands.setup ?? null,
+      start: adapter.commands.start ?? null,
+      stop: adapter.commands.stop ?? null,
+    },
+    envFiles: envFiles.map((file) => ({
+      path: file.path,
+      exists: file.exists,
+      examplePath: file.examplePath,
+      exampleExists: file.exampleExists,
+    })),
+    dependsOn: adapter.dependsOn ?? [],
+    integration: readiness ?? {
+      id: adapter.id,
+      status: "unknown",
+      productionReady: false,
+      verifiedAt: null,
+      summary: "No upstream integration metadata has been recorded for this adapter.",
+      sources: [],
+      platform: null,
+      strategy: null,
+    },
+    portal: adapter.portal ?? null,
+    nextSteps: adapterNextSteps(adapter, appDirExists, appDirReady, envFiles, readiness),
+  };
+}
+
+function directoryHasRealContent(path: string) {
+  try {
+    return readdirSync(path).some((entry) => entry !== ".gitkeep");
+  }
+  catch {
+    return false;
+  }
+}
+
+function adapterNextSteps(adapter: AdapterDescriptor, appDirExists: boolean, appDirReady: boolean, envFiles: EnvFileDiagnostic[], readiness: IntegrationReadiness | undefined) {
+  const steps: string[] = [];
+  if (!appDirExists) {
+    steps.push(`Place or checkout the upstream application at ${adapter.appDir}.`);
+  }
+  else if (!appDirReady && adapter.upstream?.repositoryUrl) {
+    steps.push(`Checkout upstream source from ${adapter.upstream.repositoryUrl} into ${adapter.appDir}.`);
+  }
+  if (envFiles.some((file) => !file.exists)) {
+    steps.push("Run node core/node/dist/clawhermes.js init-env --dry-run --json, then create the missing env files.");
+  }
+  if (adapter.commands.setup) {
+    steps.push(`Run the adapter setup command from ${adapter.appDir}: ${adapter.commands.setup}.`);
+  }
+  else {
+    steps.push("Record a verified adapter setup command when upstream installation is confirmed.");
+  }
+  if (!adapter.commands.start) {
+    steps.push("Record a verified start command before enabling real managed startup.");
+  }
+  if (readiness?.productionReady !== true) {
+    steps.push("Review integration readiness metadata and verify upstream behavior before marking the adapter production-ready.");
+  }
+  return steps;
+}

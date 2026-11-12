@@ -281,18 +281,18 @@ npm test
 
 ## 八、目录现状（重要）
 
-> 本仓库已按路线 A 建立工程骨架：`core/node/src/` 由原 `dist/` 迁入，
-> 通过 `allowJs` 参与编译，后续按文件逐步转为 TypeScript。
+> 本仓库已按路线 A 完成源码还原：`core/node/src/` 由原 `dist/` 迁入并全部转为
+> TypeScript，构建产物仍在 `core/node/dist/`。
 
 ### 有
 
 | 目录 / 文件 | 说明 |
 |---|---|
 | `package.json` `tsconfig*.json` `eslint.config.mjs` | 根级 workspace、类型检查、静态检查与统一命令 |
-| `core/node/src/` | 编排核心源码（过渡态 JavaScript，构建后输出 `dist/`） |
+| `core/node/src/` | 编排核心源码（TypeScript，构建后输出 `dist/`） |
 | `core/node/dist/` | 构建产物，可直接 `node` 运行 |
 | `apps/` | openclaw / hermes-agent / hermes-web-ui 三个上游 checkout（不入库） |
-| `skills/` | 90 个技能包 |
+| `skills/` | 88 个技能包 |
 | `config/` `adapters/` `portal/` `docs/` | 配置、适配器契约、门户、全套文档 |
 | `replica/` | 编排层复刻实现（82 个测试通过） |
 
@@ -307,7 +307,7 @@ npm test
 
 详见 [docs/RECOVERY-PLAN.md](docs/RECOVERY-PLAN.md)：
 
-- **路线 A（已采纳）**：反向还原 `dist` 为源码工程，当前已完成工程骨架与源码迁入
+- **路线 A（已采纳）**：反向还原 `dist` 为源码工程，已完成工程骨架、源码迁入与 TypeScript 化
 - 路线 B：以 `replica/` 为基础向上长成完整产品
 - 路线 C：只修文档，承认是发行版
 

@@ -91,8 +91,9 @@ function check(id, label, passed, message) {
 function healthBehavior(adapter, probeHealth) {
     if (!adapter.health?.type)
         return { type: "unknown", ready: false, reason: "Health check is missing." };
-    if (adapter.health.type === "process")
+    if (adapter.health.type === "process") {
         return { type: "process", ready: Boolean(adapter.commands.start), reason: adapter.commands.start ? "Process health can be verified by managed startup." : "Process health requires a start command." };
+    }
     if (!probeHealth)
         return { type: adapter.health.type, ready: false, reason: "Health behavior probe was skipped for this lightweight verification snapshot." };
     return (0, status_1.adapterHealth)(adapter, "running", false);

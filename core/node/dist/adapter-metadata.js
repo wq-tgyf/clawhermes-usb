@@ -3,12 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.markAdapterReady = markAdapterReady;
 const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
-const portable_1 = require("./portable");
 const adapter_verification_1 = require("./adapter-verification");
+const portable_1 = require("./portable");
 function markAdapterReady(usbRoot, serviceId, options) {
     const root = (0, portable_1.getRoot)(usbRoot);
-    if (!serviceId)
+    if (!serviceId) {
         throw new Error("Service id is required. Example: mark-adapter-ready hermes-web-ui --confirm-ready --summary \"Verified locally\"");
+    }
     if (!options.confirm)
         throw new Error("mark-adapter-ready modifies adapter metadata. Re-run with --confirm-ready to proceed.");
     const summary = options.summary?.trim();

@@ -32,10 +32,7 @@ function portableEnv(usbRoot, probe = {}) {
         npm_config_cache: (0, node_path_1.join)(root, "data", "cache", "npm"),
         PIP_CACHE_DIR: (0, node_path_1.join)(root, "data", "cache", "pip"),
         UV_CACHE_DIR: (0, node_path_1.join)(root, "data", "cache", "uv"),
-        PATH: [
-            ...(0, platform_1.runtimePathEntries)(root, platform),
-            process.env.PATH ?? "",
-        ].join(platform.pathSeparator),
+        PATH: [...(0, platform_1.runtimePathEntries)(root, platform), process.env.PATH ?? ""].join(platform.pathSeparator),
     };
 }
 function dataWritable(usbRoot) {

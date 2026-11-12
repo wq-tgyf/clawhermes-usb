@@ -153,8 +153,8 @@ function launchManagedAdapterProcess(root, adapter, serviceEnv, processPlan, att
     }
 }
 function throwShellManagedCommandError(serviceId, command) {
-    throw new Error(`Adapter ${serviceId} start command cannot be launched without a shell on Windows: ${command}. ` +
-        "Use a simple executable-plus-arguments command so ClawHermes can start it without opening cmd.exe.");
+    throw new Error(`Adapter ${serviceId} start command cannot be launched without a shell on Windows: ${command}. `
+        + "Use a simple executable-plus-arguments command so ClawHermes can start it without opening cmd.exe.");
 }
 function prepareManagedServiceEnvironment(root, adapter, serviceEnv) {
     ensureHermesConfigFile(serviceEnv);
@@ -294,8 +294,8 @@ function isClawHermesPortableSkillsPath(pathValue) {
     catch {
         return false;
     }
-    return (0, node_fs_1.existsSync)((0, node_path_1.join)(rootCandidate, "clawhermes-usb-root.txt")) ||
-        (0, node_fs_1.existsSync)((0, node_path_1.join)(rootCandidate, "core", "node", "dist", "clawhermes.js"));
+    return (0, node_fs_1.existsSync)((0, node_path_1.join)(rootCandidate, "clawhermes-usb-root.txt"))
+        || (0, node_fs_1.existsSync)((0, node_path_1.join)(rootCandidate, "core", "node", "dist", "clawhermes.js"));
 }
 function pathSuffixForComparison(pathValue) {
     return `${pathValue.replace(/[\\/]+/g, "\\").replace(/[\\/]+$/, "").toLowerCase()}`;
@@ -321,7 +321,7 @@ function splitCommandLine(command) {
     let current = "";
     let quote = null;
     for (const character of command) {
-        if ((character === '"' || character === "'") && (!quote || quote === character)) {
+        if ((character === "\"" || character === "'") && (!quote || quote === character)) {
             quote = quote ? null : character;
             continue;
         }
