@@ -83,9 +83,9 @@ export function payloadExport(usbRoot: string, options: PayloadExportOptions = {
 function payloadEntries(root: string) {
   const entries: PayloadEntry[] = [];
   for (const adapter of loadAdapters(root)) {
-    const appDir = resolveRelative(root, adapter.appDir);
+    const appDir = resolveRelative(root, adapter.appDir!);
     if (existsSync(appDir) && directoryHasPayload(appDir)) {
-      entries.push({ path: normalizeRelative(adapter.appDir), kind: "directory", sizeBytes: null });
+      entries.push({ path: normalizeRelative(adapter.appDir!), kind: "directory", sizeBytes: null });
     }
   }
   const inventory = payloadInventory(root);

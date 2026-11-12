@@ -168,7 +168,7 @@ function parseArgs(argv: string[]) {
 }
 
 function optionValue(value: string | undefined) {
-  return Boolean(value) && !value.startsWith("-");
+  return Boolean(value) && !value!.startsWith("-");
 }
 
 function parseBackupProfile(value: string) {
@@ -572,7 +572,7 @@ async function main() {
       return;
     }
     case "restore-plan": {
-      const result = restorePlan(root, archive);
+      const result = restorePlan(root, archive!);
       if (json) {
         printJson(result);
       }
@@ -585,7 +585,7 @@ async function main() {
       return;
     }
     case "restore": {
-      const result = restoreBackup(root, archive, { confirmRestore });
+      const result = restoreBackup(root, archive!, { confirmRestore });
       if (json) {
         printJson(result);
       }

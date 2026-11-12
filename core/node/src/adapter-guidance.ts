@@ -22,7 +22,7 @@ export function adapterSetupPlan(usbRoot: string, serviceId?: string) {
   return {
     root,
     generatedAt: new Date().toISOString(),
-    adapters: selected.map((adapter) => adapterSetupItem(root, adapter, readiness.get(adapter.id), envFiles.filter((item) => item.serviceId === adapter.id))),
+    adapters: selected.map((adapter) => adapterSetupItem(root, adapter, readiness.get(adapter.id!), envFiles.filter((item) => item.serviceId === adapter.id))),
   };
 }
 
@@ -167,7 +167,7 @@ function probeError(probe: SpawnSyncReturns<string>) {
 }
 
 function sourcePlanItem(root: string, adapter: AdapterDescriptor) {
-  const appDirPath = resolveRelative(root, adapter.appDir);
+  const appDirPath = resolveRelative(root, adapter.appDir!);
   const appDirExists = existsSync(appDirPath);
   const appDirReady = appDirExists && directoryHasRealContent(appDirPath);
   return {
@@ -212,9 +212,9 @@ function removePlaceholderFiles(path: string) {
 }
 
 function adapterSetupItem(root: string, adapter: AdapterDescriptor, readiness: IntegrationReadiness | undefined, envFiles: EnvFileDiagnostic[]) {
-  const appDirExists = existsSync(resolveRelative(root, adapter.appDir));
-  const appDirReady = appDirExists && directoryHasRealContent(resolveRelative(root, adapter.appDir));
-  const dataDirExists = existsSync(resolveRelative(root, adapter.dataDir));
+  const appDirExists = existsSync(resolveRelative(root, adapter.appDir!));
+  const appDirReady = appDirExists && directoryHasRealContent(resolveRelative(root, adapter.appDir!));
+  const dataDirExists = existsSync(resolveRelative(root, adapter.dataDir!));
   return {
     id: adapter.id,
     displayName: adapter.displayName,
@@ -228,9 +228,9 @@ function adapterSetupItem(root: string, adapter: AdapterDescriptor, readiness: I
     upstream: adapter.upstream ?? null,
     runtime: adapter.runtime ?? null,
     commands: {
-      setup: adapter.commands.setup ?? null,
-      start: adapter.commands.start ?? null,
-      stop: adapter.commands.stop ?? null,
+      setup: adapter.commands!.setup ?? null,
+      start: adapter.commands!.start ?? null,
+      stop: adapter.commands!.stop ?? null,
     },
     envFiles: envFiles.map((file) => ({
       path: file.path,
@@ -274,13 +274,13 @@ function adapterNextSteps(adapter: AdapterDescriptor, appDirExists: boolean, app
   if (envFiles.some((file) => !file.exists)) {
     steps.push("Run node core/node/dist/clawhermes.js init-env --dry-run --json, then create the missing env files.");
   }
-  if (adapter.commands.setup) {
-    steps.push(`Run the adapter setup command from ${adapter.appDir}: ${adapter.commands.setup}.`);
+  if (adapter.commands!.setup) {
+    steps.push(`Run the adapter setup command from ${adapter.appDir}: ${adapter.commands!.setup}.`);
   }
   else {
     steps.push("Record a verified adapter setup command when upstream installation is confirmed.");
   }
-  if (!adapter.commands.start) {
+  if (!adapter.commands!.start) {
     steps.push("Record a verified start command before enabling real managed startup.");
   }
   if (readiness?.productionReady !== true) {

@@ -15,7 +15,7 @@ export function writeStatusSnapshot(usbRoot: string, status: unknown): string {
 export function adapterHealth(
   adapter: AdapterDescriptor,
   status: string,
-  placeholder?: boolean,
+  placeholder?: boolean | null,
 ): AdapterHealth {
   const type = typeof adapter.health?.type === "string" ? adapter.health.type : "unknown";
   const url = typeof adapter.health?.url === "string" ? adapter.health.url : null;

@@ -67,8 +67,8 @@ export function adapterRuntimeRequirementDiagnostics(usbRoot: string, adapters: 
   return adapters
     .filter((adapter) => adapter.runtime)
     .map((adapter) => {
-      const runtime = adapter.runtime;
-      const diagnostic: RuntimeDiagnostic | undefined = runtimes.get(runtime.kind);
+      const runtime = adapter.runtime!;
+      const diagnostic: RuntimeDiagnostic | undefined = runtimes.get(runtime.kind!);
       const versionRequirement = runtime.versionRequirement ?? null;
       const satisfies = versionRequirement && diagnostic?.version
         ? satisfiesVersionRequirement(diagnostic.version, versionRequirement)
@@ -84,7 +84,7 @@ export function adapterRuntimeRequirementDiagnostics(usbRoot: string, adapters: 
         found: diagnostic?.found === true,
         version: diagnostic?.version ?? null,
         satisfies,
-        message: runtimeRequirementMessage(adapter.id, runtime.kind, diagnostic?.version ?? null, versionRequirement, satisfies),
+        message: runtimeRequirementMessage(adapter.id!, runtime.kind!, diagnostic?.version ?? null, versionRequirement, satisfies),
       };
     });
 }

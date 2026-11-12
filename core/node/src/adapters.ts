@@ -13,7 +13,7 @@ export function loadAdapters(usbRoot: string, probe: PlatformProbe = {}) {
     .filter((file) => existsSync(file))
     .map((file) => JSON.parse(readFileSync(file, "utf8")))
     .map((adapter) => applyPlatformOverride(adapter, platform))
-    .sort((a, b) => a.id.localeCompare(b.id));
+    .sort((a, b) => a.id!.localeCompare(b.id!));
 }
 
 function applyPlatformOverride(adapter: AdapterDescriptor, platform: string) {
@@ -30,7 +30,7 @@ function applyPlatformOverride(adapter: AdapterDescriptor, platform: string) {
   };
 }
 
-function mergeEnv(base: AdapterEnvDescriptor, override: AdapterEnvDescriptor | undefined) {
+function mergeEnv(base: AdapterEnvDescriptor | undefined, override: AdapterEnvDescriptor | undefined) {
   if (!override) return base;
   return {
     ...base,
@@ -69,7 +69,7 @@ export function validateAdapter(adapter: AdapterDescriptor, knownIds: string[]) 
 
 export function integrationReadiness(adapters: AdapterDescriptor[]) {
   return adapters.map((adapter) => ({
-    id: adapter.id,
+    id: adapter.id!,
     status: adapter.integration?.status ?? "unknown",
     productionReady: adapter.integration?.productionReady === true,
     verifiedAt: adapter.integration?.verifiedAt ?? null,

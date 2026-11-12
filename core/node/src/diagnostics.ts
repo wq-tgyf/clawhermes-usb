@@ -23,7 +23,7 @@ interface PortDiagnostic {
 export function setupDiagnostics(usbRoot: string) {
   const root = getRoot(usbRoot);
   const adapters = loadAdapters(root);
-  const knownIds = adapters.map((adapter) => adapter.id);
+  const knownIds = adapters.map((adapter) => adapter.id!);
   const adapterResults = adapters.map((adapter) => validateAdapter(adapter, knownIds));
   const runtimes = runtimeDiagnostics(root);
   const adapterRuntimeRequirements = adapterRuntimeRequirementDiagnostics(root, adapters);
@@ -243,7 +243,7 @@ function resolveLogTarget(usbRoot: string, target: string) {
   }
   const adapter = loadAdapters(root).find((item) => item.id === target);
   if (!adapter) throw new Error(`Unknown log target: ${target}`);
-  return resolveRelative(root, adapter.logFile);
+  return resolveRelative(root, adapter.logFile!);
 }
 
 export function pathDiagnostics(usbRoot: string) {

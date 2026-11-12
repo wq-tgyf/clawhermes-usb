@@ -215,7 +215,7 @@ function ensureWeixinPluginRegistered(root: string, env: Record<string, string>)
 function weixinPluginRegistered(root: string, env: Record<string, string>, pluginPath: string) {
   const expectedPath = normalizePathForCompare(pluginPath);
   const config = readJsonObject(env.OPENCLAW_CONFIG_PATH || join(root, "data", "openclaw", "openclaw.json"));
-  const loadPaths = Array.isArray(config?.plugins?.load?.paths) ? config.plugins.load.paths : [];
+  const loadPaths: unknown[] = Array.isArray(config?.plugins?.load?.paths) ? config.plugins.load.paths : [];
   const configHasPath = loadPaths.some((item) => typeof item === "string" && normalizePathForCompare(item) === expectedPath);
   const configEnablesPlugin = config?.plugins?.entries?.[WEIXIN_PLUGIN_ID]?.enabled === true;
   const stateDir = env.OPENCLAW_STATE_DIR || join(root, "data", "openclaw");

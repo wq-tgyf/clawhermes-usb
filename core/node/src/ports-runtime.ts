@@ -38,7 +38,7 @@ export async function assignRuntimePorts(rootInput: string, adapters: AdapterDes
     const assignedPort = await chooseAvailablePort(defaultPort, reserved);
     reserved.add(assignedPort);
     services.push({
-      serviceId: adapter.id,
+      serviceId: adapter.id!,
       host: "127.0.0.1",
       defaultPort,
       assignedPort,

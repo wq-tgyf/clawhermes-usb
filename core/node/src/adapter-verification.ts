@@ -18,16 +18,16 @@ export function verifyAdapter(usbRoot: string, serviceId: string, options: Verif
   const adapter = loadAdapters(root).find((item) => item.id === serviceId);
   if (!adapter) throw new Error(`Unknown adapter: ${serviceId}`);
   const checks: Array<{ id: string; label: string; status: string; message: string }> = [];
-  const appDirPath = resolveRelative(root, adapter.appDir);
+  const appDirPath = resolveRelative(root, adapter.appDir!);
   const appDirReady = existsSync(appDirPath) && directoryHasRealContent(appDirPath);
   checks.push(check("app-dir-ready", "App directory", appDirReady, appDirReady ? `App directory contains real content: ${adapter.appDir}` : `App directory is missing or placeholder-only: ${adapter.appDir}`));
-  const setupCommand = Boolean(adapter.commands.setup);
-  checks.push(check("setup-command", "Setup command", setupCommand, setupCommand ? `Setup command is declared: ${adapter.commands.setup}` : "Setup command is missing."));
+  const setupCommand = Boolean(adapter.commands!.setup);
+  checks.push(check("setup-command", "Setup command", setupCommand, setupCommand ? `Setup command is declared: ${adapter.commands!.setup}` : "Setup command is missing."));
   const setupLog = resolveRelative(root, `data/logs/setup-${adapter.id}.log`);
   const setupOutput = existsSync(setupLog);
   checks.push(check("setup-output", "Setup output", setupOutput, setupOutput ? `Setup log exists: data/logs/setup-${adapter.id}.log` : `Setup log is missing: data/logs/setup-${adapter.id}.log`));
-  const startCommand = Boolean(adapter.commands.start);
-  checks.push(check("start-command", "Start command", startCommand, startCommand ? `Start command is declared: ${adapter.commands.start}` : "Start command is missing."));
+  const startCommand = Boolean(adapter.commands!.start);
+  checks.push(check("start-command", "Start command", startCommand, startCommand ? `Start command is declared: ${adapter.commands!.start}` : "Start command is missing."));
   const envFiles = envFileDiagnostics(root, [adapter]);
   const envReady = envFiles.every((file) => file.exists);
   checks.push(check("env-files", "Env files", envReady, envReady ? "All declared env files exist." : "One or more declared env files are missing."));
@@ -95,7 +95,7 @@ function check(id: string, label: string, passed: boolean, message: string) {
 function healthBehavior(adapter: AdapterDescriptor, probeHealth: boolean) {
   if (!adapter.health?.type) return { type: "unknown", ready: false, reason: "Health check is missing." };
   if (adapter.health.type === "process") {
-    return { type: "process", ready: Boolean(adapter.commands.start), reason: adapter.commands.start ? "Process health can be verified by managed startup." : "Process health requires a start command." };
+    return { type: "process", ready: Boolean(adapter.commands!.start), reason: adapter.commands!.start ? "Process health can be verified by managed startup." : "Process health requires a start command." };
   }
   if (!probeHealth) return { type: adapter.health.type, ready: false, reason: "Health behavior probe was skipped for this lightweight verification snapshot." };
   return adapterHealth(adapter, "running", false);

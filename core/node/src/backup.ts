@@ -31,6 +31,11 @@ interface RestoreEntryInput {
   kind?: unknown;
 }
 
+interface BackupManifest {
+  entries: RestoreEntryInput[];
+  [key: string]: unknown;
+}
+
 export function createBackup(usbRoot: string, options: CreateBackupOptions = {}) {
   const root = getRoot(usbRoot);
   const profile = options.profile ?? "data-only";
@@ -212,7 +217,7 @@ function compressDirectory(stagingRoot: string, archivePath: string) {
   execFileSync("powershell", ["-NoProfile", "-Command", script], { stdio: "pipe" });
 }
 
-function readBackupManifest(archivePath: string) {
+function readBackupManifest(archivePath: string): BackupManifest {
   const script = [
     "Add-Type -AssemblyName System.IO.Compression.FileSystem",
     `$zip = [System.IO.Compression.ZipFile]::OpenRead(${powershellString(archivePath)})`,

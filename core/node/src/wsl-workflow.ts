@@ -140,7 +140,7 @@ export function wslWorkflowPlan(usbRoot: string, serviceId: string) {
     distro,
     sourceDistro,
     wslReady,
-    stopHookDeclared: Boolean(adapter.commands.stop),
+    stopHookDeclared: Boolean(adapter.commands!.stop),
     diagnostics,
     phases,
     messages: wslReady
