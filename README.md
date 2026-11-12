@@ -99,7 +99,8 @@ node core/node/dist/clawhermes.js status --json
 
 本仓库提供 Windows 批处理入口（`launcher/windows/`）：
 
-- `ClawHermes-Control.vbs` / `ClawHermes-Control.bat`：启动服务并打开本地门户
+- `ClawHermes-Control.vbs`：以 Edge/Chrome 应用模式打开独立窗口，关闭窗口后自动停止服务
+- `ClawHermes-Control.bat` / `2-Start-ClawHermes.bat`：启动服务并打开默认浏览器
 - 编号脚本：安装诊断、启动、停止、状态、备份与高级维护
 
 PyQt / Electrobun 图形控制壳仅在发行包中提供，源码与构建脚本不在本仓库。
