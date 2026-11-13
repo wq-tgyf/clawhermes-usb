@@ -194,7 +194,7 @@ chmod +x Start-ClawHermes-Mac.command Stop-ClawHermes-Mac.command
 
 - 首次运行能解压 macOS Node runtime 和 Python runtime。
 - `core/node/dist/clawhermes.js start --json` 能正常启动。
-- Hermes Agent 的 `http://127.0.0.1:8642/health` 返回 200。
+- Hermes Agent 的 `http://127.0.0.1:8642/api/status` 返回 200。
 - Hermes Web UI 的 `http://127.0.0.1:8648` 可以打开。
 - 有 `ClawHermes-Control-Mac.app` 时会打开 Electrobun UI。
 - 没有 `.app` 时会打开浏览器 Portal。

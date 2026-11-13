@@ -31,8 +31,9 @@
 ## Hermes Agent
 
 - 当前默认走 **Windows 原生路径**（项目内 Python venv），不再强制 WSL2。
-- 健康检查端点：`http://127.0.0.1:8642/health`
-- 本地验证 commit：`f27fcb6a82b8487174ca941c15e7a5887371eede`
+- 健康检查端点：`http://127.0.0.1:8642/api/status`
+- 启动命令：`hermes serve --port 8642 --skip-build`（`hermes gateway run` 是消息平台网关，不监听 HTTP 端口）
+- 本地验证：2026-11-13 用 PyPI 包 `hermes-agent` 实测 `/api/status` 返回 200，Windows 路径待复验
 
 ## Hermes Web UI
 

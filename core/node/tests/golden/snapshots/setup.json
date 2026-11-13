@@ -116,7 +116,7 @@
           "status": "verified",
           "productionReady": true,
           "verifiedAt": "<DATE>",
-          "summary": "Windows-native verification passed on <DATE>: source checkout at apps/hermes-agent, Python 3.11 venv setup completed with pip install -e . exit 0, start-adapter launched .venv\\\\Scripts\\\\hermes.exe gateway run, and http://127.0.0.1:8642/health returned 200 through control status.",
+          "summary": "2026-11-13 Linux 实测：PyPI 包 hermes-agent 用 `hermes serve --port 8642 --skip-build` 启动后，http://127.0.0.1:8642/api/status 返回 200；`hermes gateway run` 不监听该端口，/health 在该版本返回 404。Windows 路径需按同一命令复验一次。",
           "sources": [
             "https://hermes-agent.org/",
             "https://github.com/NousResearch/hermes-agent"

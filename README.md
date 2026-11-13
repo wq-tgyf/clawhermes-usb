@@ -32,7 +32,7 @@ ClawHermes-USB 是一个 **Windows 优先的便携运行套件**，用同一个�
 - **统一网关/鉴权 token**：OpenClaw、Hermes Agent、Hermes Web UI 默认均为 `clawhermes`。
 - **便携备份**：时间戳 zip 归档写入 `data/backups/`。
 - **只读恢复计划**与受保护的"不覆盖"恢复执行。
-- **Hermes Agent 的 Windows 原生适配路径**：项目内 Python venv + `http://127.0.0.1:8642/health`。
+- **Hermes Agent 的 Windows 原生适配路径**：项目内 Python venv + `hermes serve --port 8642` + `http://127.0.0.1:8642/api/status`。
 - **OpenClaw 的 Windows 原生适配路径**：Node.js + pnpm + 项目内 state/log 路径 + `http://127.0.0.1:18789/healthz`。
 - **本地控制服务**（`127.0.0.1`）：为桌面客户端提供状态、安装诊断、日志、模型配置、服务启停、关闭的 JSON API。
 - **Windows 批处理入口**位于 `launcher/windows/`，VBS 入口在后台启动服务并打开本地门户。

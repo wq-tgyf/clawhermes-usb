@@ -36,7 +36,7 @@ Verified commands:
 - `node core\node\dist\clawhermes.js setup-adapter hermes-web-ui --confirm-setup --json`
 - `node core\node\dist\clawhermes.js start-adapter hermes-agent --confirm-start --json`
 - `node core\node\dist\clawhermes.js start-adapter hermes-web-ui --confirm-start --json`
-- `Invoke-WebRequest http://127.0.0.1:8642/health`
+- `Invoke-WebRequest http://127.0.0.1:8642/api/status`
 - `Invoke-WebRequest http://127.0.0.1:8648`
 - `node core\node\dist\clawhermes.js verify-adapter hermes-web-ui --json`
 
