@@ -3,11 +3,12 @@ chcp 65001 >nul
 setlocal
 set "ROOT=%~dp0..\.."
 if not exist "%ROOT%\data\logs" mkdir "%ROOT%\data\logs"
-call "%~dp0_clawhermes.bat" start > "%ROOT%\data\logs\launcher.log" 2>&1
+call "%~dp0_clawhermes.bat" start > "%ROOT%\data\logs\start-console.log" 2>&1
 set "CODE=%ERRORLEVEL%"
-type "%ROOT%\data\logs\launcher.log"
+type "%ROOT%\data\logs\start-console.log"
 if not "%CODE%"=="0" (
-  echo 启动失败。日志：%ROOT%\data\logs\launcher.log
+  echo 启动失败。控制台输出：%ROOT%\data\logs\start-console.log
+  echo 运行日志：%ROOT%\data\logs\launcher.log
   pause
   exit /b 1
 )
