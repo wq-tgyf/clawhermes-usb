@@ -291,10 +291,11 @@ apps/hermes-agent
 - Windows 运行位置：Windows-native Python，依赖 `apps/hermes-agent/.venv/`。
 - macOS 运行位置：macOS `python3`，依赖 `apps/hermes-agent/vendor/<darwin-arch>/`。
 - 默认端口：`8642`。
-- 健康检查：`http://127.0.0.1:8642/api/status`。
-- Windows 启动命令：`python -c "from hermes_cli.main import main; raise SystemExit(main())" serve --port 8642 --skip-build`。
-- macOS 启动命令：`python3 -c "from hermes_cli.main import main; raise SystemExit(main())" serve --port 8642 --skip-build`。
+- 健康检查：`http://127.0.0.1:8642/health`（需 `API_SERVER_ENABLED=true` 与 `API_SERVER_KEY`）。
+- Windows 启动命令：`python -c "from hermes_cli.main import main; raise SystemExit(main())" gateway run`。
+- macOS 启动命令：`python3 -c "from hermes_cli.main import main; raise SystemExit(main())" gateway run`。
 - 数据目录：`data/hermes`。
+- Linux 本机验证：`python3 -m venv .venv` 后执行 `./.venv/bin/hermes gateway run`，并设置 `API_SERVER_ENABLED=true`、`API_SERVER_KEY`；便携运行时放在 `runtimes/linux/{node,python,git}/bin`。
 
 准备方式：
 
@@ -370,7 +371,7 @@ Hermes Web UI 的业务关系是：
 Hermes Web UI -> Hermes Agent API
 ```
 
-也就是说，Web UI 可打开不代表 Hermes 聊天能力可用；还必须确认 `http://127.0.0.1:8642/api/status` 正常。
+也就是说，Web UI 可打开不代表 Hermes 聊天能力可用；还必须确认 `http://127.0.0.1:8642/health` 正常。
 
 ### 3.5 payload 复核命令
 

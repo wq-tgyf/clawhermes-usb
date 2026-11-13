@@ -84,6 +84,18 @@
           "https://github.com/EKKOLearnAI/hermes-web-ui"
         ]
       }
+    },
+    "linux": {
+      "runtime": {
+        "kind": "node",
+        "platform": "linux",
+        "requiredExecutable": "node",
+        "versionRequirement": ">=23.0.0"
+      },
+      "commands": {
+        "setup": "npm install && npm run build",
+        "start": "node dist/server/index.js"
+      }
     }
   },
   "dependsOn": [

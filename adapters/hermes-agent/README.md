@@ -19,7 +19,7 @@ This adapter runs Hermes Agent as the backend runtime for Hermes Web UI.
 
 Hermes Agent public docs list Linux, macOS, and WSL2 as the supported installation path, with native Windows described as experimental. The gateway command suite includes `run`, `start`, `stop`, `restart`, `status`, `install`, `uninstall`, and `setup`.
 
-For ClawHermes-USB, foreground `hermes serve --port 8642 --skip-build` is preferred because it is the command that actually binds the HTTP port and can be managed by our process manager. `hermes gateway run` starts the messaging gateway (Telegram/Discord) and does not listen on 8642.
+For ClawHermes-USB, foreground `hermes gateway run` is the managed command. With `API_SERVER_ENABLED=true` and `API_SERVER_KEY` set in the adapter env, the gateway also binds `8642` and serves `/health` plus the OpenAI-compatible API.
 
 ## 2026-05-01 WSL2 Verification
 
@@ -33,9 +33,9 @@ For ClawHermes-USB, foreground `hermes serve --port 8642 --skip-build` is prefer
 ## 2026-11-13 API Verification
 
 - Installed from PyPI (`pip install --upgrade hermes-agent`) instead of the source checkout; the source install pulls an optional `kittentts` extra whose pinned `spacy` fails to build offline.
-- Start command: `hermes serve --port 8642 --skip-build`.
-- Health URL: `http://127.0.0.1:8642/api/status` (returns `200`). `/health` returns `404` in this upstream version.
-- `hermes gateway run` does not bind port `8642`.
+- Start command: `hermes gateway run` with `API_SERVER_ENABLED=true` and `API_SERVER_KEY=clawhermes`.
+- Health URL: `http://127.0.0.1:8642/health` (returns `200`). `/api/status` is not served by this upstream build.
+- `hermes gateway run` without `API_SERVER_ENABLED=true` does not bind port `8642`.
 - Windows re-verification is still required.
 
 Adapter status: `verified`

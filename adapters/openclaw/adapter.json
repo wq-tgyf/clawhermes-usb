@@ -64,5 +64,19 @@
       "https://docs.openclaw.kr/cli/gateway"
     ]
   },
-  "dependsOn": []
+  "dependsOn": [],
+  "platformOverrides": {
+    "linux": {
+      "runtime": {
+        "kind": "node",
+        "platform": "linux",
+        "requiredExecutable": "node",
+        "versionRequirement": ">=22.0.0"
+      },
+      "commands": {
+        "setup": "mkdir -p ${USB_ROOT}/apps/openclaw-runtime && npm install --prefix ${USB_ROOT}/apps/openclaw-runtime --no-audit --no-fund openclaw@latest",
+        "start": "node ${USB_ROOT}/apps/openclaw-runtime/node_modules/openclaw/openclaw.mjs gateway run --port ${OPENCLAW_GATEWAY_PORT} --verbose --allow-unconfigured"
+      }
+    }
+  }
 }

@@ -27,7 +27,7 @@
             "installDocs": "https://hermes-agent.org/",
             "checkoutRef": "main",
             "installMode": "pypi",
-            "notes": "当前上游版本只有 `hermes serve` 会监听 HTTP 端口；`hermes gateway run` 是消息平台网关，不绑定 8642。依赖改用 PyPI 包安装，避免源码构建时的可选依赖冲突。"
+            "notes": "hermes gateway run 是官方入口；设置 API_SERVER_ENABLED=true 与 API_SERVER_KEY 后，网关会同时监听 8642 并提供 /health。依赖改用 PyPI 包安装，避免源码构建时的可选依赖冲突。"
           },
           "runtime": {
             "kind": "python",
@@ -36,8 +36,8 @@
             "versionRequirement": ">=3.11.0"
           },
           "commands": {
-            "setup": "python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install --upgrade hermes-agent",
-            "start": "python -c \"from hermes_cli.main import main; raise SystemExit(main())\" serve --port 8642 --skip-build",
+            "setup": "python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install --upgrade --extra-index-url https://pypi.org/simple hermes-agent",
+            "start": "python -c \"from hermes_cli.main import main; raise SystemExit(main())\" gateway run",
             "stop": null
           },
           "envFiles": [
@@ -50,17 +50,16 @@
           ],
           "dependsOn": [],
           "integration": {
-            "id": "hermes-agent",
             "status": "verified",
             "productionReady": true,
-            "verifiedAt": "<DATE>",
-            "summary": "2026-11-13 Linux 实测：PyPI 包 hermes-agent 用 `hermes serve --port 8642 --skip-build` 启动后，http://127.0.0.1:8642/api/status 返回 200；`hermes gateway run` 不监听该端口，/health 在该版本返回 404。Windows 路径需按同一命令复验一次。",
+            "verifiedAt": "2026-11-13",
+            "summary": "2026-11-13 Linux 实测：PyPI 包 hermes-agent 0.15.x 用 `hermes gateway run` 启动，配合 API_SERVER_ENABLED=true 与 API_SERVER_KEY，http://127.0.0.1:8642/health 返回 200。该命令在 Windows 上需再复验一次。",
+            "platform": "windows",
+            "strategy": "windows-native-adapter",
             "sources": [
               "https://hermes-agent.org/",
               "https://github.com/NousResearch/hermes-agent"
-            ],
-            "platform": "windows",
-            "strategy": "windows-native-adapter"
+            ]
           },
           "portal": {
             "label": "Hermes Agent API",
@@ -69,7 +68,79 @@
           },
           "nextSteps": [
             "Run the adapter setup command from apps/hermes-agent: python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install -e .."
-          ]
+          ],
+          "env": {
+            "files": [
+              "config/env/hermes.env"
+            ],
+            "variables": {
+              "HERMES_HOME": "${USB_ROOT}/data/hermes",
+              "API_SERVER_ENABLED": "true",
+              "API_SERVER_KEY": "clawhermes",
+              "HOME": "${USB_ROOT}/data/home",
+              "USERPROFILE": "${USB_ROOT}/data/home",
+              "PYTHONPATH": "${USB_ROOT}/apps/hermes-agent;${USB_ROOT}/apps/hermes-agent/.venv/Lib/site-packages",
+              "PYTHONNOUSERSITE": "1",
+              "PYTHONUTF8": "1"
+            }
+          },
+          "health": {
+            "type": "http",
+            "url": "http://127.0.0.1:8642/health",
+            "timeoutSeconds": 30
+          },
+          "platformOverrides": {
+            "darwin": {
+              "runtime": {
+                "kind": "python",
+                "platform": "darwin",
+                "requiredExecutable": "python3",
+                "versionRequirement": ">=3.11.0"
+              },
+              "commands": {
+                "setup": "python3 -m pip install --upgrade pip && python3 -m pip install --target vendor/${CLAWHERMES_RUNTIME_KEY} hermes-agent aiohttp==3.13.3",
+                "start": "python3 -c \"from hermes_cli.main import main; raise SystemExit(main())\" gateway run"
+              },
+              "env": {
+                "variables": {
+                  "PYTHONPATH": "${USB_ROOT}/apps/hermes-agent/vendor/${CLAWHERMES_RUNTIME_KEY}:${USB_ROOT}/apps/hermes-agent",
+                  "PYTHONNOUSERSITE": "1",
+                  "PYTHONUTF8": "1"
+                }
+              },
+              "integration": {
+                "status": "verified",
+                "productionReady": true,
+                "verifiedAt": "2026-06-01",
+                "summary": "macOS adapter uses portable python3 plus a movable vendor/<darwin-arch> dependency directory prepared on a macOS build host; start runs hermes_cli.main from USB_ROOT without reusing the Windows venv.",
+                "platform": "darwin",
+                "strategy": "macos-python-vendor",
+                "sources": [
+                  "https://hermes-agent.org/",
+                  "https://github.com/NousResearch/hermes-agent"
+                ]
+              }
+            },
+            "linux": {
+              "runtime": {
+                "kind": "python",
+                "platform": "linux",
+                "requiredExecutable": "python3",
+                "versionRequirement": ">=3.11.0"
+              },
+              "commands": {
+                "setup": "python3 -m venv .venv && ./.venv/bin/python -m pip install --upgrade pip && ./.venv/bin/python -m pip install --upgrade --extra-index-url https://pypi.org/simple hermes-agent",
+                "start": "./.venv/bin/hermes gateway run"
+              },
+              "env": {
+                "variables": {
+                  "PYTHONPATH": "",
+                  "PYTHONNOUSERSITE": "1",
+                  "PYTHONUTF8": "1"
+                }
+              }
+            }
+          }
         },
         {
           "id": "hermes-web-ui",
@@ -112,16 +183,13 @@
             "hermes-agent"
           ],
           "integration": {
-            "id": "hermes-web-ui",
             "status": "verified",
             "productionReady": true,
-            "verifiedAt": "<DATE>",
+            "verifiedAt": "2026-05-01",
             "summary": "Verified in the current USB root with official portable Node 24.15.0: upstream checkout b508de843fc8c9add284264759dee18c525b4f69, npm install setup, Hermes Agent dependency running, HTTP 200 on http://127.0.0.1:8648, and verify-adapter productionReadyCandidate=true.",
             "sources": [
               "https://github.com/EKKOLearnAI/hermes-web-ui"
-            ],
-            "platform": null,
-            "strategy": null
+            ]
           },
           "portal": {
             "label": "Hermes Web UI",
@@ -130,7 +198,64 @@
           },
           "nextSteps": [
             "Run the adapter setup command from apps/hermes-web-ui: npm install."
-          ]
+          ],
+          "env": {
+            "files": [
+              "config/env/hermes-web-ui.env"
+            ],
+            "variables": {
+              "HERMES_HOME": "${USB_ROOT}/data/hermes",
+              "HERMES_WEB_UI_DATA_DIR": "${USB_ROOT}/data/hermes-web-ui",
+              "PORT": "8648",
+              "HERMES_AGENT_API_BASE": "http://127.0.0.1:8642",
+              "UPSTREAM": "http://127.0.0.1:8642",
+              "AUTH_TOKEN": "clawhermes",
+              "HOME": "${USB_ROOT}/data/home",
+              "USERPROFILE": "${USB_ROOT}/data/home"
+            }
+          },
+          "health": {
+            "type": "http",
+            "url": "http://127.0.0.1:8648",
+            "timeoutSeconds": 30
+          },
+          "platformOverrides": {
+            "darwin": {
+              "runtime": {
+                "kind": "node",
+                "platform": "darwin",
+                "requiredExecutable": "node",
+                "versionRequirement": ">=23.0.0"
+              },
+              "commands": {
+                "setup": "npm install && npm run build",
+                "start": "node dist/server/index.js"
+              },
+              "integration": {
+                "status": "verified",
+                "productionReady": true,
+                "verifiedAt": "2026-06-01",
+                "summary": "macOS adapter uses the same built dist/server payload with Node >=23 from runtimes/macos/node/<darwin-arch>/bin and macOS-compatible dependencies prepared by npm install on a macOS build host.",
+                "platform": "darwin",
+                "strategy": "macos-node-adapter",
+                "sources": [
+                  "https://github.com/EKKOLearnAI/hermes-web-ui"
+                ]
+              }
+            },
+            "linux": {
+              "runtime": {
+                "kind": "node",
+                "platform": "linux",
+                "requiredExecutable": "node",
+                "versionRequirement": ">=23.0.0"
+              },
+              "commands": {
+                "setup": "npm install && npm run build",
+                "start": "node dist/server/index.js"
+              }
+            }
+          }
         },
         {
           "id": "openclaw",
@@ -171,17 +296,16 @@
           ],
           "dependsOn": [],
           "integration": {
-            "id": "openclaw",
             "status": "verified",
             "productionReady": true,
-            "verifiedAt": "<DATE>",
-            "summary": "Windows-native verification passed on <DATE>: source checkout at apps/openclaw, setup completed with pnpm build exit 0, start-adapter launched node openclaw.mjs gateway run, and http://127.0.0.1:18789/healthz returned 200 through control status.",
+            "verifiedAt": "2026-05-06",
+            "summary": "Windows-native verification passed on 2026-05-06: source checkout at apps/openclaw, setup completed with pnpm build exit 0, start-adapter launched node openclaw.mjs gateway run, and http://127.0.0.1:18789/healthz returned 200 through control status.",
+            "platform": "windows",
+            "strategy": "windows-native-adapter",
             "sources": [
               "https://docs.openclaw.ai/platforms/windows",
               "https://docs.openclaw.kr/cli/gateway"
-            ],
-            "platform": "windows",
-            "strategy": "windows-native-adapter"
+            ]
           },
           "portal": {
             "label": "OpenClaw",
@@ -190,7 +314,41 @@
           },
           "nextSteps": [
             "Run the adapter setup command from apps/openclaw: corepack enable && corepack prepare pnpm@10.33.2 --activate && pnpm install && pnpm build."
-          ]
+          ],
+          "env": {
+            "files": [
+              "config/env/openclaw.env"
+            ],
+            "variables": {
+              "HOME": "${USB_ROOT}/data/home",
+              "USERPROFILE": "${USB_ROOT}/data/home",
+              "OPENCLAW_HOME": "${USB_ROOT}/data/openclaw",
+              "OPENCLAW_DATA_DIR": "${USB_ROOT}/data/openclaw",
+              "OPENCLAW_STATE_DIR": "${USB_ROOT}/data/openclaw",
+              "OPENCLAW_CONFIG_PATH": "${USB_ROOT}/data/openclaw/openclaw.json",
+              "OPENCLAW_GATEWAY_PORT": "18789",
+              "OPENCLAW_GATEWAY_TOKEN": "clawhermes"
+            }
+          },
+          "health": {
+            "type": "http",
+            "url": "http://127.0.0.1:18789/healthz",
+            "timeoutSeconds": 30
+          },
+          "platformOverrides": {
+            "linux": {
+              "runtime": {
+                "kind": "node",
+                "platform": "linux",
+                "requiredExecutable": "node",
+                "versionRequirement": ">=22.0.0"
+              },
+              "commands": {
+                "setup": "mkdir -p ${USB_ROOT}/apps/openclaw-runtime && npm install --prefix ${USB_ROOT}/apps/openclaw-runtime --no-audit --no-fund openclaw@latest",
+                "start": "node ${USB_ROOT}/apps/openclaw-runtime/node_modules/openclaw/openclaw.mjs gateway run --port ${OPENCLAW_GATEWAY_PORT} --verbose --allow-unconfigured"
+              }
+            }
+          }
         }
       ]
     }

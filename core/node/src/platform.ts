@@ -24,6 +24,13 @@ export function runtimePathEntries(usbRoot: string, info: PlatformInfo = detectP
       join(usbRoot, "runtimes", "macos", "git", info.runtimeKey, "bin"),
     ];
   }
+  if (info.id === "linux") {
+    return [
+      join(usbRoot, "runtimes", "linux", "node", "bin"),
+      join(usbRoot, "runtimes", "linux", "python", "bin"),
+      join(usbRoot, "runtimes", "linux", "git", "bin"),
+    ];
+  }
   return [
     join(usbRoot, "runtimes", "windows", "node"),
     join(usbRoot, "runtimes", "windows", "python"),

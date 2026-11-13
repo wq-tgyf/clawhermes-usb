@@ -17,11 +17,11 @@
     "installDocs": "https://hermes-agent.org/",
     "checkoutRef": "main",
     "installMode": "pypi",
-    "notes": "当前上游版本只有 `hermes serve` 会监听 HTTP 端口；`hermes gateway run` 是消息平台网关，不绑定 8642。依赖改用 PyPI 包安装，避免源码构建时的可选依赖冲突。"
+    "notes": "hermes gateway run 是官方入口；设置 API_SERVER_ENABLED=true 与 API_SERVER_KEY 后，网关会同时监听 8642 并提供 /health。依赖改用 PyPI 包安装，避免源码构建时的可选依赖冲突。"
   },
   "commands": {
-    "setup": "python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install --upgrade hermes-agent",
-    "start": "python -c \"from hermes_cli.main import main; raise SystemExit(main())\" serve --port 8642 --skip-build",
+    "setup": "python -m venv .venv && .venv\\Scripts\\python.exe -m pip install --upgrade pip && .venv\\Scripts\\python.exe -m pip install --upgrade --extra-index-url https://pypi.org/simple hermes-agent",
+    "start": "python -c \"from hermes_cli.main import main; raise SystemExit(main())\" gateway run",
     "stop": null
   },
   "env": {
@@ -30,6 +30,7 @@
     ],
     "variables": {
       "HERMES_HOME": "${USB_ROOT}/data/hermes",
+      "API_SERVER_ENABLED": "true",
       "API_SERVER_KEY": "clawhermes",
       "HOME": "${USB_ROOT}/data/home",
       "USERPROFILE": "${USB_ROOT}/data/home",
@@ -43,7 +44,7 @@
   "pidFile": "data/tmp/pids/hermes-agent.pid",
   "health": {
     "type": "http",
-    "url": "http://127.0.0.1:8642/api/status",
+    "url": "http://127.0.0.1:8642/health",
     "timeoutSeconds": 30
   },
   "portal": {
@@ -55,7 +56,7 @@
     "status": "verified",
     "productionReady": true,
     "verifiedAt": "2026-11-13",
-    "summary": "2026-11-13 Linux 实测：PyPI 包 hermes-agent 用 `hermes serve --port 8642 --skip-build` 启动后，http://127.0.0.1:8642/api/status 返回 200；`hermes gateway run` 不监听该端口，/health 在该版本返回 404。Windows 路径需按同一命令复验一次。",
+    "summary": "2026-11-13 Linux 实测：PyPI 包 hermes-agent 0.15.x 用 `hermes gateway run` 启动，配合 API_SERVER_ENABLED=true 与 API_SERVER_KEY，http://127.0.0.1:8642/health 返回 200。该命令在 Windows 上需再复验一次。",
     "platform": "windows",
     "strategy": "windows-native-adapter",
     "sources": [
@@ -73,7 +74,7 @@
       },
       "commands": {
         "setup": "python3 -m pip install --upgrade pip && python3 -m pip install --target vendor/${CLAWHERMES_RUNTIME_KEY} hermes-agent aiohttp==3.13.3",
-        "start": "python3 -c \"from hermes_cli.main import main; raise SystemExit(main())\" serve --port 8642 --skip-build"
+        "start": "python3 -c \"from hermes_cli.main import main; raise SystemExit(main())\" gateway run"
       },
       "env": {
         "variables": {
@@ -93,6 +94,25 @@
           "https://hermes-agent.org/",
           "https://github.com/NousResearch/hermes-agent"
         ]
+      }
+    },
+    "linux": {
+      "runtime": {
+        "kind": "python",
+        "platform": "linux",
+        "requiredExecutable": "python3",
+        "versionRequirement": ">=3.11.0"
+      },
+      "commands": {
+        "setup": "python3 -m venv .venv && ./.venv/bin/python -m pip install --upgrade pip && ./.venv/bin/python -m pip install --upgrade --extra-index-url https://pypi.org/simple hermes-agent",
+        "start": "./.venv/bin/hermes gateway run"
+      },
+      "env": {
+        "variables": {
+          "PYTHONPATH": "",
+          "PYTHONNOUSERSITE": "1",
+          "PYTHONUTF8": "1"
+        }
       }
     }
   },

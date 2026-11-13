@@ -37,8 +37,8 @@ Current conclusion:
 - The same README says native Windows is not supported and Windows users should install WSL2.
 - The official site says native Windows support is experimental.
 - The Hermes gateway command suite handles `run`, `start`, `stop`, `restart`, `status`, `install`, `uninstall`, and `setup`.
-- For a portable process manager, foreground `hermes serve --port 8642 --skip-build` is the current candidate; `hermes gateway run` starts the messaging gateway and does not bind the HTTP port.
-- 2026-11-13: verified against the PyPI package that `http://127.0.0.1:8642/api/status` returns `200`; in this upstream version `/health` returns `404`. Windows re-verification is still pending.
+- For a portable process manager, foreground `hermes gateway run` is the current candidate; with `API_SERVER_ENABLED=true` and `API_SERVER_KEY` set, the gateway also binds `8642` and serves `/health`.
+- 2026-11-13: verified against PyPI package `hermes-agent` 0.15.x that `http://127.0.0.1:8642/health` returns `200` once the API server is enabled. Windows re-verification is still pending.
 - A real upstream checkout is present locally at `apps/hermes-agent` for WSL2 validation, pinned for this verification pass at commit `ec1443b`.
 - `adapters/hermes-agent/adapter.json` now models Hermes Agent as a WSL2 adapter targeting the managed `ClawHermes-Ubuntu` distribution, with `sourceDistro: Ubuntu` used for rootfs/import/export planning.
 - Real setup was verified in WSL2 with the upstream `setup-hermes.sh` script after normalizing CRLF line endings and declining interactive optional prompts.

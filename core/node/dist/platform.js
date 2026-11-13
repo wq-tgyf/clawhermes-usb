@@ -25,6 +25,13 @@ function runtimePathEntries(usbRoot, info = detectPlatform()) {
             (0, node_path_1.join)(usbRoot, "runtimes", "macos", "git", info.runtimeKey, "bin"),
         ];
     }
+    if (info.id === "linux") {
+        return [
+            (0, node_path_1.join)(usbRoot, "runtimes", "linux", "node", "bin"),
+            (0, node_path_1.join)(usbRoot, "runtimes", "linux", "python", "bin"),
+            (0, node_path_1.join)(usbRoot, "runtimes", "linux", "git", "bin"),
+        ];
+    }
     return [
         (0, node_path_1.join)(usbRoot, "runtimes", "windows", "node"),
         (0, node_path_1.join)(usbRoot, "runtimes", "windows", "python"),
